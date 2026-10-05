@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhaj • Islamic Calendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        
+        /* Subtle radial ambient glow in hero */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80vw;
+            height: 60vh;
+            background: radial-gradient(ellipse at center, rgba(16,185,129,0.07) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glass { background: rgba(255,255,255, 0.04); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255, 0.08); }
+        .modern-card { transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 8px 24px -12px rgb(0 0 0 / 0.4); position: relative; overflow: hidden; }
+        .modern-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(16,185,129,0.04) 0%, transparent 60%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+        .modern-card:hover { transform: translateY(-8px) scale(1.015); box-shadow: 0 20px 50px -12px rgb(16 185 129 / 0.12), 0 0 20px rgb(16 185 129 / 0.15); border-color: rgba(16,185,129,0.4); }
+        .modern-card:hover::before { opacity: 1; }
+        
+        .floating { animation: float-gentle 5s ease-in-out infinite; }
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        
+        .section-header { font-size: 2.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; }
+        .event-pill { font-size: 0.7rem; padding: 2px 9px; border-radius: 50px; font-weight: 700; letter-spacing: 0.05em; }
+        .prayer-time { font-size: 1.3rem; font-weight: 700; line-height: 1; }
+        
+        .neo-glow { box-shadow: 0 0 30px rgb(16 185 129 / 18%), 0 12px 24px rgb(0 0 0 / 0.25); }
+        .moon-glow { box-shadow: 0 0 40px rgb(245 158 11 / 45%), 0 0 70px rgb(245 158 11 / 18%); }
+        
+        .calendar-day { transition: all .15s ease; border-radius: 10px; }
+        .calendar-day:hover { background-color: rgba(16, 185, 129, 0.12); }
+        .calendar-day.today { background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: 700; box-shadow: 0 4px 12px rgb(16 185 129 / 0.4); }
+        
+        .todo-item { transition: all .2s ease; }
+        .todo-item.completed { opacity: 0.55; text-decoration: line-through; }
+        
+        .cursor-trail { position: fixed; width: 4px; height: 4px; background: #34d399; pointer-events: none; z-index: 9999; opacity: 0.6; border-radius: 50%; box-shadow: 0 0 8px #34d399; }
+        
+        .prayer-card { transition: all 0.25s ease; border: 1px solid rgba(63,66,71,0.8); }
+        .prayer-card:hover { border-color: rgba(16,185,129,0.5); box-shadow: 0 0 18px rgb(16 185 129 / 0.2); transform: translateY(-2px); }
+        
+        .text-glow { transition: text-shadow 0.3s ease; }
+        .text-glow:hover { text-shadow: 0 0 20px rgb(16 185 129 / 60%), 0 0 40px rgb(16 185 129 / 30%); }
+        .homepage-glow { box-shadow: 0 0 40px rgb(16 185 129 / 12%); }
+        
+        /* Pill nav active indicator */
+        .nav-pill-active { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+        
+        /* Section divider */
+        .section-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 0; }
+        
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(16,185,129,0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(16,185,129,0.5); }
+
+        /* Mini calendar Hijri sub-labels */
+        .calendar-day .text-\[8px\] { opacity: 0.5; }
+        .calendar-day:hover .text-\[8px\] { opacity: 0.8; }
+        .calendar-day.today .text-\[8px\] { opacity: 0.85; color: rgba(255,255,255,0.8); }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="bg-transparent backdrop-blur-xl sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-screen-2xl mx-auto">
+            <div class="px-8 py-5 flex items-center justify-between">
+                <div id="nav-content" class="flex items-center justify-between w-full">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-11 h-11 flex items-center justify-center">
+                            <i class="fa-solid fa-mosque text-emerald-400 text-3xl"></i>
+                        </div>
+                        <span class="font-bold text-3xl tracking-tighter">Minhaj</span>
+                    </div>
+                    
+                    <div class="hidden md:flex items-center justify-center flex-1">
+                        <div class="flex items-center gap-x-1 text-sm glass border border-zinc-700 px-2 py-1 rounded-[3rem]">
+                            <a href="#prayers" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Prayers</a>
+                            <a href="#calendar" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Calendar</a>
+                            <a href="#interactive-calendar" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Planner</a>
+                            <a href="#knowledge" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Knowledge</a>
+                            <a href="#life-framework" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Framework</a>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-x-3">
+                        <div class="px-4 py-2 text-xs font-medium flex items-center gap-x-2 bg-zinc-900 border border-zinc-700 rounded-3xl whitespace-nowrap">
+                            <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></div>
+                            <span class="font-semibold text-xs">1447 AH • 2026</span>
+                        </div>
+                        <div class="w-9 h-9 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center cursor-pointer hover:bg-zinc-800 transition-colors" onclick="showProfileModal()">
+                            <i class="fa-solid fa-user text-emerald-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+ <!-- Hero Section -->
+<div class="max-w-screen-2xl mx-auto px-8 pt-16 pb-10">
+    <div class="text-center max-w-3xl mx-auto relative">
+        
+        <!-- Bismillah -->
+        <div class="text-emerald-300 text-3xl mb-8 font-serif tracking-wider">
+            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+        </div>
+        
+        <!-- Eyebrow -->
+        <div class="text-emerald-300 text-sm tracking-[4px] font-bold mb-4">
+            YOUR ISLAMIC LIFE ROADMAP
+        </div>
+        
+        <!-- Main Heading -->
+        <h1 class="text-6xl lg:text-7xl font-bold tracking-tighter leading-tight mb-6">
+            A Life Built on <span class="text-emerald-400 italic">Purpose,</span><br>
+            Guided by <span class="text-emerald-400 italic">Faith</span>
+        </h1>
+        
+        <!-- Quranic Verse -->
+        <p class="max-w-2xl mx-auto text-xl text-zinc-300 italic mt-8">
+            "Verily, Allah will not change the condition of a people until they change what is within themselves."
+        </p>
+        <p class="text-emerald-300 text-sm mt-3">— Surah Ar-Ra'd, 13:11</p>
+        
+        <!-- Bigger Floating Countdown Card (with glow) -->
+        <div class="mt-10 mx-auto max-w-[360px]">
+            <div class="glass border border-emerald-900/30 neo-glow rounded-[3rem] p-7 floating homepage-glow hover:shadow-[0_0_50px_rgb(16,185,129,0.4)] transition-all duration-300">
+                <div class="flex justify-between items-start mb-5">
+                    <div class="text-left">
+                        <div id="hero-date" class="text-xs text-emerald-300 font-bold">TODAY • — — —</div>
+                        <div class="mt-1 flex items-baseline gap-x-2">
+                            <span id="hero-hijri-day" class="text-5xl font-extrabold tracking-tighter">—</span>
+                            <span id="hero-hijri-month" class="font-bold text-emerald-300 text-2xl">—</span>
+                        </div>
+                        <div id="hero-hijri-year" class="text-xs font-medium text-zinc-400">— AH</div>
+                    </div>
+                    <div class="text-right flex flex-col items-end gap-y-2">
+                        <div class="moon-glow inline-flex items-center justify-center w-11 h-11 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-[2rem]">
+                            <i class="fa-solid fa-moon text-zinc-900 text-3xl"></i>
+                        </div>
+                        <div id="hero-clock" class="font-extrabold text-lg tabular-nums text-zinc-200">—:—:—</div>
+                    </div>
+                </div>
+                
+                <div class="pt-5 border-t border-zinc-700">
+                    <div class="flex items-center justify-between">
+                        <div class="text-left">
+                            <div class="text-xs text-emerald-300 font-bold">NEXT PRAYER</div>
+                            <div id="next-prayer-name" class="font-extrabold text-3xl">—</div>
+                        </div>
+                        <div class="text-right">
+                            <div id="next-prayer-countdown" class="font-extrabold text-4xl tabular-nums text-emerald-300">—:—:—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Buttons Section -->
+<div class="max-w-screen-2xl mx-auto px-8 pb-16">
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4">
+        
+        <button onclick="document.getElementById('interactive-calendar').scrollIntoView({ behavior: 'smooth' })" 
+                class="px-7 transition-all py-[15px] flex items-center justify-center gap-x-2 bg-emerald-400 hover:bg-emerald-300 text-zinc-950 font-extrabold rounded-3xl text-sm px-8 shadow-xl shadow-emerald-900/30">
+            <span>Open Interactive Planner</span>
+            <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+        
+        <button onclick="document.getElementById('prayers').scrollIntoView({ behavior: 'smooth' })" 
+                class="px-6 py-[15px] transition-all flex items-center justify-center gap-x-2 font-semibold border border-zinc-700 hover:bg-zinc-900 text-sm px-5 rounded-3xl">
+            <i class="fa-solid fa-clock mr-2"></i> 
+            <span>Prayer Times</span>
+        </button>
+        
+    </div>
+</div>
+            
+            
+        </div>
+    </div>
+    
+    <!-- Prayer Times -->
+    <div id="prayers" class="max-w-screen-2xl mx-auto px-8 pt-8 pb-6">
+        <div class="flex items-end justify-between mb-6 px-1">
+            <div>
+                <span class="text-xs font-extrabold tracking-wider px-3 py-1 bg-emerald-900/20 text-emerald-300 rounded-[2rem]">LIVE</span>
+                <div class="flex items-center gap-x-3">
+                    <h2 class="section-header text-4xl tracking-tighter">Prayer Times</h2>
+                    <button onclick="showFullscreenTimer()" class="px-5 py-2 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold text-xs rounded-[3rem] flex items-center gap-x-2 shadow-lg">
+                        <i class="fa-solid fa-expand"></i>
+                        <span>MASJID MODE</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <select id="calc-method" onchange="refreshPrayerTimes()" class="bg-zinc-900 border border-zinc-700 text-sm rounded-3xl px-4 py-2 text-emerald-300 font-semibold">
+                    <option value="2">Muslim World League</option>
+                    <option value="3">ISNA</option>
+                    <option value="4">Umm Al-Qura</option>
+                    <option value="5">Egyptian General Authority</option>
+                    <option value="1">University of Islamic Sciences, Karachi</option>
+                </select>
+                
+                <button onclick="getPrayerTimes()" class="px-5 flex items-center gap-x-2 text-sm transition-all py-3 px-6 font-semibold bg-zinc-900 hover:bg-emerald-900 border border-zinc-700 hover:border-emerald-700 rounded-3xl text-sm">
+                    <i class="fa-solid fa-location-arrow"></i> 
+                    <span id="location-btn-text">Use My Location</span>
+                </button>
+            </div>
+        </div>
+        
+        <div id="prayer-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3"></div>
+        
+        <div class="mt-6 px-1">
+            <div class="text-xs font-extrabold text-emerald-300 mb-2">ISLAMIC REMINDERS</div>
+            <div class="flex flex-wrap gap-2">
+                <div class="px-4 py-1.5 bg-zinc-900 border border-zinc-700 rounded-[3rem] text-xs flex items-center gap-x-2">
+                    <input type="checkbox" id="reminder-morning" checked class="accent-emerald-400"> <span>Morning Adhkar</span>
+                </div>
+                <div class="px-4 py-1.5 bg-zinc-900 border border-zinc-700 rounded-[3rem] text-xs flex items-center gap-x-2">
+                    <input type="checkbox" id="reminder-evening" checked class="accent-emerald-400"> <span>Evening Adhkar</span>
+                </div>
+                <div class="px-4 py-1.5 bg-zinc-900 border border-zinc-700 rounded-[3rem] text-xs flex items-center gap-x-2">
+                    <input type="checkbox" id="reminder-night" class="accent-emerald-400"> <span>Night Adhkar</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Islamic Holidays & Observances -->
+    <div id="calendar" class="max-w-screen-2xl mx-auto px-8 py-10">
+        <div class="flex items-center justify-between mb-6 px-1">
+            <div>
+                <h2 class="section-header text-4xl tracking-tighter">Islamic Holidays &amp; Observances</h2>
+                <p class="text-emerald-300 font-semibold text-sm">Confirmed Sunnah dates and practices</p>
+            </div>
+            
+            <div class="flex items-center bg-zinc-900 border border-zinc-700 rounded-[3rem]">
+                <button onclick="changeYear(-1)" class="px-4 py-2 text-sm font-extrabold flex items-center justify-center hover:bg-zinc-800 transition-colors rounded-l-[3rem]">
+                    <i class="fa-solid fa-chevron-left mr-1.5"></i> <span>Prev</span>
+                </button>
+                <div id="current-year-display" class="px-6 py-2 font-extrabold text-emerald-300 border-l border-r border-zinc-700">1447 AH</div>
+                <button onclick="changeYear(1)" class="px-4 py-2 text-sm font-extrabold flex items-center justify-center hover:bg-zinc-800 transition-colors rounded-r-[3rem]">
+                    <span>Next</span> <i class="fa-solid fa-chevron-right ml-1.5"></i>
+                </button>
+            </div>
+            
+            <div class="flex items-center gap-x-[5px]">
+                <div onclick="filterEvents('all')" class="cursor-pointer px-4 py-[6px] text-xs font-extrabold transition-colors rounded-[3rem] bg-emerald-400 text-zinc-900 px-5" id="filter-all">All</div>
+                <div onclick="filterEvents('fasting')" class="cursor-pointer px-4 py-[6px] text-xs font-extrabold transition-colors hover:bg-zinc-800 px-5 rounded-[3rem] bg-zinc-900 border border-zinc-700" id="filter-fasting">Fasting</div>
+                <div onclick="filterEvents('eid')" class="cursor-pointer px-4 py-[6px] text-xs font-extrabold transition-colors hover:bg-zinc-800 px-5 rounded-[3rem] bg-zinc-900 border border-zinc-700" id="filter-eid">Eid</div>
+            </div>
+        </div>
+        
+        <div id="events-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4"></div>
+    </div>
+    
+    <!-- Interactive Calendar + Planner + To-Do -->
+    <div id="interactive-calendar" class="max-w-screen-2xl mx-auto px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-5">
+                <div class="glass border border-zinc-700 rounded-3xl p-5">
+                    <div class="flex items-center justify-between mb-4 px-1">
+                        <div>
+                            <div class="font-extrabold text-xl">Hijri Calendar</div>
+                            <div id="mini-calendar-header" class="text-emerald-300 text-sm font-semibold">June 2026 • 1447 AH</div>
+                        </div>
+                        
+                        <div class="flex items-center gap-x-1">
+                            <button onclick="prevMonth()" class="w-9 h-9 flex items-center justify-center hover:bg-zinc-800 transition-colors rounded-2xl"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="goToToday()" class="px-3 py-1 text-xs bg-emerald-900/30 hover:bg-emerald-900/50 text-emerald-300 rounded-[2rem] font-extrabold">Today</button>
+                            <button onclick="nextMonth()" class="w-9 h-9 flex items-center justify-center hover:bg-zinc-800 transition-colors rounded-2xl"><i class="fa-solid fa-chevron-right"></i></button>
+                            
+                            <button onclick="showCalendarPlanner()" class="ml-2 px-3 py-1 text-xs bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50 rounded-[2rem] font-extrabold flex items-center gap-x-1">
+                                <i class="fa-solid fa-plus text-xs"></i> <span>Plan</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="mini-calendar" class="mini-calendar grid grid-cols-7 gap-1 text-center text-xs font-medium"></div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-4">
+                <div class="glass border border-zinc-700 rounded-3xl p-5 h-full flex flex-col">
+                    <div class="font-extrabold text-xl mb-4 px-1">Sunnah Planner</div>
+                    <div class="flex-1">
+                        <div class="mb-3">
+                            <div class="text-xs text-emerald-300 font-bold px-1 mb-1">TODAY'S FOCUS</div>
+                            <div class="px-4 py-[10px] bg-zinc-900 border border-emerald-900/40 text-emerald-300 font-semibold rounded-2xl flex items-center gap-x-3">
+                                <i class="fa-solid fa-sun text-xl"></i>
+                                <div>
+                                    <div class="font-extrabold">Fasting • 3 days to Ashura</div>
+                                    <div class="text-xs">Prepare for recommended fast on 25 June</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-xs text-emerald-300 font-bold px-1 mb-1">UPCOMING</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center justify-between px-3 py-2 bg-zinc-900 rounded-2xl">
+                                <div>Day of Ashura (1448)</div>
+                                <div class="text-xs font-bold text-emerald-300">25 June 2026</div>
+                            </div>
+                            <div class="flex items-center justify-between px-3 py-2 bg-zinc-900 rounded-2xl">
+                                <div>Islamic New Year (1449)</div>
+                                <div class="text-xs font-bold text-emerald-300">16 June 2027</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-3">
+                <div class="glass border border-zinc-700 rounded-3xl p-5 h-full flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="font-extrabold text-xl">To-Do List</div>
+                        <button onclick="resetDailyTasks()" class="text-xs px-3 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-[2rem] font-extrabold">Reset Daily</button>
+                    </div>
+                    
+                    <div class="flex-1 overflow-auto">
+                        <div id="todo-list" class="space-y-[4px]"></div>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <button onclick="showFullTodoModal()" class="w-full text-center py-2 text-xs font-extrabold text-emerald-300 hover:text-emerald-400 transition-colors">View all tasks →</button>
+                    </div>
+                    
+                    <div class="pt-3 mt-auto">
+                        <div class="flex">
+                            <input id="todo-input" type="text" placeholder="Add custom task..." class="flex-1 bg-zinc-900 border border-zinc-700 px-4 py-3 text-sm rounded-l-3xl focus:outline-none focus:border-emerald-700">
+                            <button onclick="addTodo()" class="px-5 transition-colors bg-emerald-400 hover:bg-emerald-300 text-emerald-900 font-extrabold rounded-r-3xl text-sm">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Resources Section -->
+    <div class="max-w-screen-2xl mx-auto px-8 pb-6">
+        <div class="mb-6 px-1">
+            <h2 class="section-header text-4xl tracking-tighter">Resources &amp; Tools</h2>
+            <p class="text-emerald-300 font-semibold text-sm">Curated Islamic apps, websites, and learning platforms</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 modern-card floating">
+                <div class="flex items-center gap-x-3 mb-4">
+                    <i class="fa-solid fa-globe text-emerald-400 text-2xl"></i>
+                    <div class="font-extrabold text-xl">English Resources</div>
+                </div>
+                <div class="text-sm text-zinc-300 space-y-3">
+                    <div>• <a href="https://quran.com" target="_blank" class="text-emerald-300 hover:underline">Quran.com</a></div>
+                    <div>• <a href="https://sunnah.com" target="_blank" class="text-emerald-300 hover:underline">Sunnah.com</a></div>
+                    <div>• <a href="https://tarteel.ai" target="_blank" class="text-emerald-300 hover:underline">Tarteel</a></div>
+                    <div>• <a href="https://mawaqit.net" target="_blank" class="text-emerald-300 hover:underline">Mawaqit</a></div>
+                    <div>• <a href="https://zoya.finance" target="_blank" class="text-emerald-300 hover:underline">Zoya</a></div>
+                </div>
+            </div>
+            
+            <div class="glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 modern-card floating">
+                <div class="flex items-center gap-x-3 mb-4">
+                    <i class="fa-solid fa-language text-emerald-400 text-2xl"></i>
+                    <div class="font-extrabold text-xl">الموارد العربية</div>
+                </div>
+                <div class="text-sm text-zinc-300 space-y-3">
+                    <div>• <a href="https://quran.com/ar" target="_blank" class="text-emerald-300 hover:underline">قرآن.كوم</a></div>
+                    <div>• <a href="https://sunnah.com/ar" target="_blank" class="text-emerald-300 hover:underline">سنة.كوم</a></div>
+                    <div>• <a href="https://mawaqit.net/ar" target="_blank" class="text-emerald-300 hover:underline">مواقيت</a></div>
+                    <div>• <a href="https://tarteel.ai/ar" target="_blank" class="text-emerald-300 hover:underline">ترتيل</a></div>
+                </div>
+            </div>
+            
+            <div class="glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 modern-card floating">
+                <div class="flex items-center gap-x-3 mb-4">
+                    <i class="fa-solid fa-graduation-cap text-emerald-400 text-2xl"></i>
+                    <div class="font-extrabold text-xl">Learning Platforms</div>
+                </div>
+                <div class="text-sm text-zinc-300 space-y-3">
+                    <div>• <a href="https://zad-academy.com" target="_blank" class="text-emerald-300 hover:underline">Zad Academy</a></div>
+                    <div>• <a href="https://seekersguidance.org" target="_blank" class="text-emerald-300 hover:underline">SeekersGuidance</a></div>
+                    <div>• <a href="https://yaqeeninstitute.org" target="_blank" class="text-emerald-300 hover:underline">Yaqeen Institute</a></div>
+                    <div>• <a href="https://bayyinah.tv" target="_blank" class="text-emerald-300 hover:underline">Bayyinah TV</a></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex justify-center mt-6">
+            <button onclick="showFullToolboxModal()" class="px-8 py-3.5 bg-emerald-900/30 hover:bg-emerald-900/50 text-emerald-300 font-extrabold rounded-[3rem] flex items-center gap-x-3 transition-all">
+                <i class="fa-solid fa-book text-lg"></i>
+                <span>View Full Muslim Toolbox</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Islamic Life Framework -->
+    <div id="life-framework" class="max-w-screen-2xl mx-auto px-8 py-12">
+        <div class="text-center mb-10">
+            <div class="text-emerald-300 text-sm tracking-[3px] font-bold mb-2">YOUR ISLAMIC LIFE ROADMAP</div>
+            <h2 class="section-header text-4xl tracking-tighter">My Islamic Life Framework</h2>
+            <p class="text-emerald-300 mt-2">A structured approach to Health, Knowledge, and Religion</p>
+        </div>
+        
+        <div class="flex justify-center mb-8">
+            <div class="glass border border-zinc-700 px-2 py-1 rounded-[3rem] flex">
+                <button onclick="showLifeFramework('health')" class="px-6 py-2 rounded-[3rem] font-bold text-sm transition-all" id="tab-health">💪 Health</button>
+                <button onclick="showLifeFramework('knowledge')" class="px-6 py-2 rounded-[3rem] font-bold text-sm transition-all" id="tab-knowledge">📖 Knowledge</button>
+                <button onclick="showLifeFramework('religion')" class="px-6 py-2 rounded-[3rem] font-bold text-sm transition-all" id="tab-religion">🕌 Religion</button>
+                <button onclick="showLifeFramework('all')" class="px-6 py-2 rounded-[3rem] font-bold text-sm transition-all" id="tab-all">✦ All</button>
+            </div>
+        </div>
+        
+        <div id="life-framework-content"></div>
+    </div>
+    
+    <!-- Knowledge Section -->
+    <div id="knowledge" class="max-w-screen-2xl mx-auto px-8 pb-10 pt-4">
+        <div class="mb-6 px-1">
+            <h2 class="section-header text-4xl tracking-tighter">Sunnah Knowledge Base</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(0)">
+                <div class="flex items-center gap-x-3">
+                    <i class="fa-solid fa-mountain text-emerald-400 text-3xl"></i>
+                    <div><div class="font-extrabold">Fasting Arafah</div><div class="text-xs text-emerald-300">9 Dhul Hijjah</div></div>
+                </div>
+                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Fasting on the Day of Arafah expiates the sins of the previous and coming year.</div>
+            </div>
+            
+            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(1)">
+                <div class="flex items-center gap-x-3">
+                    <i class="fa-solid fa-cloud-moon text-emerald-400 text-3xl"></i>
+                    <div><div class="font-extrabold">Laylatul Qadr</div><div class="text-xs text-emerald-300">27 Ramadan</div></div>
+                </div>
+                <div class="mt-4 text-xs leading-relaxed text-zinc-300">The Night of Power. Better than a thousand months.</div>
+            </div>
+            
+            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(2)">
+                <div class="flex items-center gap-x-3">
+                    <i class="fa-solid fa-star text-emerald-400 text-3xl"></i>
+                    <div><div class="font-extrabold">Day of Ashura</div><div class="text-xs text-emerald-300">10 Muharram</div></div>
+                </div>
+                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Fasting Ashura expiates sins of the past year.</div>
+            </div>
+            
+            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(3)">
+                <div class="flex items-center gap-x-3">
+                    <i class="fa-solid fa-book text-emerald-400 text-3xl"></i>
+                    <div><div class="font-extrabold">Surah Al-Kahf</div><div class="text-xs text-emerald-300">Every Friday</div></div>
+                </div>
+                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Whoever reads Surah Al-Kahf on Friday will have a light between this Friday and the next.</div>
+            </div>
+            
+            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(4)">
+                <div class="flex items-center gap-x-3">
+                    <i class="fa-solid fa-bed text-emerald-400 text-3xl"></i>
+                    <div><div class="font-extrabold">Dua Before Sleep</div><div class="text-xs text-emerald-300">Daily Sunnah</div></div>
+                </div>
+                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Recite Ayatul Kursi + the three Quls (Ikhlas, Falaq, Nas) before sleeping for protection.</div>
+            </div>
+            
+            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(5)">
+                <div class="flex items-center gap-x-3">
+                    <i class="fa-solid fa-sun text-emerald-400 text-3xl"></i>
+                    <div><div class="font-extrabold">Morning &amp; Evening Adhkar</div><div class="text-xs text-emerald-300">Daily Protection</div></div>
+                </div>
+                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Recite the morning and evening supplications for protection, blessings and barakah in your day.</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="border-t border-zinc-800 py-6 px-8 max-w-screen-2xl mx-auto">
+        <div class="flex justify-between items-center px-1 text-xs text-zinc-400">
+            <div>© 2026 Minhaj • Accurate lunar dates</div>
+            <div class="flex gap-x-5">
+                <div class="cursor-pointer hover:text-emerald-300">Moon Sighting</div>
+                <div class="cursor-pointer hover:text-emerald-300">Community</div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        function initializeTailwind() {
+            tailwind.config = { theme: { extend: {} } };
+        }
+
+        const DATA = {
+
+  // ══════════ HEALTH ══════════
+  health: {
+    intro: {
+      icon: '💪',
+      verse: '"And eat and drink, but waste not by excess — indeed, He does not like those who waste."',
+      ref: '— Surah Al-A\'raf, 7:31',
+    },
+    goals: {
+      '10yr': [
+        { t:'Ideal body composition for life',   d:'Sustained health as a form of shukr to Allah', r:'"Your body has a right over you." — Sahih Bukhari' },
+        { t:'Excellent health biomarkers',        d:'Blood pressure, glucose & weight in optimal range', r:'"A strong believer is better than a weak believer." — Sahih Muslim' },
+        { t:'Movement as a joyful daily act',     d:'Exercise feels natural — a form of ibadah', r:'Health is one of the five maqasid al-shari\'ah' },
+      ],
+      '5yr': [
+        { t:'Run or walk a 5K without stopping', d:'Build cardiovascular base through steady training', r:'Physical vigour was a sunnah of the Prophet ﷺ' },
+        { t:'Whole foods as the daily default',   d:'Processed food is the rare exception', r:'"A human fills no vessel worse than his stomach." — Ibn Majah' },
+        { t:'Consistent 7–8 hour sleep',          d:'Sleep schedule locked in — waking rested every day', r:'The Prophet ﷺ disliked staying up late without good reason' },
+      ],
+      '1yr': [
+        { t:'Reach target healthy weight',        d:'Through consistent diet and movement', r:'Protect the amanah of health before old age takes it' },
+        { t:'Exercise 4x per week',               d:'Routine fully embedded in your schedule', r:'"Take benefit of your health before your illness." — Hadith' },
+        { t:'Eliminate one major bad habit',      d:'Quit smoking, reduce sugar, or cut junk food', r:'Every addiction is servitude to the nafs (ego)' },
+      ],
+      '6mo': [
+        { t:'Walk 30 minutes every day',          d:'Outside, rain or shine — zero exceptions', r:'Walking is sunnah; the Prophet ﷺ walked with purpose and speed' },
+        { t:'Drink 8 glasses of water daily',     d:'Hydration becomes automatic', r:'Water is a mercy from Allah — treat it as such' },
+        { t:'Sleep by 11pm consistently',         d:'Wind-down ritual in place, screens off by 10:30pm', r:'The Prophet ﷺ preferred early sleep and early rising' },
+      ],
+      '1mo': [
+        { t:'Walk 15 minutes every day',          d:'No gym needed — just outside, every single day', r:'Consistency in small deeds is more beloved than bursts of effort' },
+        { t:'Cut all sugary drinks',              d:'Replace soda with water or herbal tea', r:'Water, honey, and dates were the Prophet\'s ﷺ drinks of choice' },
+        { t:'Sleep 30 minutes earlier',           d:'Shift bedtime back gradually this month', r:'Protect your sleep to protect your fajr' },
+      ],
+      '1wk': [
+        { t:'Walk 3 times this week',             d:'10 minutes minimum each walk', r:'The most beloved deeds to Allah are small and consistent' },
+        { t:'Drink 6+ glasses of water daily',    d:'Set phone reminders if needed', r:'Gratitude for water is gratitude for life itself' },
+        { t:'Sleep before midnight every night',  d:'Phone down 30 minutes before bed', r:'The salaf protected sleep to protect fajr' },
+      ],
+      'daily': [
+        { t:'Move your body once',                d:'Walk, stretch, or exercise — anything counts', r:'"Your body has a right over you." — Sahih Bukhari' },
+        { t:'Water before anything else',         d:'Before coffee, before your phone — water first', r:'Begin the day with gratitude for the simplest blessing' },
+        { t:'Sleep at the same time every night', d:'Consistency beats duration — same bedtime always', r:'Discipline at night protects the barakah of the morning' },
+      ],
+    },
+    antigoals: {
+      '10yr': [
+        { t:'Israf (overindulgence)',             d:'Excess in food, sleep, or leisure that corrupts discipline', r:'"Waste not — Allah does not love the wasteful." — Quran 7:31' },
+        { t:'Kasl (habitual laziness)',           d:'A character of avoidance the Prophet ﷺ explicitly warned against', r:'"O Allah, I seek refuge from laziness." — Daily Dua of the Prophet ﷺ' },
+        { t:'Neglecting the body as amanah',      d:'Treating health as unimportant or "just dunya"', r:'You will be asked about your health on Yawm al-Qiyamah' },
+      ],
+      '5yr': [
+        { t:'Yo-yo dieting with extreme fasts',  d:'Harms your body and contradicts wasatiyyah (balance)', r:'Islam commands balance — neither asceticism nor indulgence' },
+        { t:'Riya of the body (showing off)',     d:'Exercising for appearance or status rather than health', r:'"Actions are by intentions." — Hadith, Bukhari & Muslim' },
+        { t:'Sacrificing sleep for dunya',        d:'Staying up for entertainment while missing fajr', r:'The Prophet ﷺ warned against negligence of fajr' },
+      ],
+      '1yr': [
+        { t:'Haraam shortcuts in health',         d:'Extreme pills or methods that harm the body', r:'Harming the amanah of your body is self-betrayal' },
+        { t:'All-or-nothing thinking',            d:'"If I can\'t be perfect, I won\'t try at all" — a trap of Shaytan', r:'A little consistently is better than a lot occasionally' },
+        { t:'Using illness as permanent excuse',  d:'A real excuse is temporary — not a lifestyle', r:'Illness expiates sin — but don\'t seek it out' },
+      ],
+      '6mo': [
+        { t:'Breaking sleep for social media',   d:'Scrolling at midnight is self-sabotage dressed as rest', r:'Guard your time — it is your life, and life is short' },
+        { t:'Eating in constant distraction',     d:'Eating while scrolling or rushing — mindless consumption', r:'The Prophet ﷺ ate mindfully, in measured amounts' },
+        { t:'Over-comparing your progress',       d:'Envying another\'s health journey breeds hasad', r:'"Look at those below you in worldly matters." — Hadith, Muslim' },
+      ],
+      '1mo': [
+        { t:'Starting then quitting immediately', d:'One bad day is not failure — quitting is', r:'Shaytan\'s most effective tool is making you abandon what you started' },
+        { t:'Eating until overfull',              d:'Consistently eating past satiety is israf', r:'"One third food, one third drink, one third air." — Hadith, Tirmidhi' },
+        { t:'Skipping movement because of mood',  d:'Discipline transcends feelings', r:'The nafs will always resist what is good for it at first' },
+      ],
+      '1wk': [
+        { t:'Letting one bad day become seven',  d:'Missing Monday is fine. Cascading is the trap.', r:'"Never miss twice" is an Islamic principle in modern language' },
+        { t:'Only drinking coffee or tea',        d:'Dehydration masquerading as a full day', r:'Water is a ni\'mah — don\'t neglect it' },
+        { t:'Sleeping after Fajr unnecessarily', d:'Post-Fajr sleep cuts barakah from the day', r:'Scholars warn against sleeping after Fajr as a regular habit' },
+      ],
+      'daily': [
+        { t:'Skipping movement entirely',         d:'Even 5 minutes of walking is not "nothing"', r:'No matter how small — move. It is your amanah.' },
+        { t:'Ignoring thirst signals',            d:'Chronic dehydration harms focus and worship quality', r:'Your body speaking to you is Allah\'s system — listen' },
+        { t:'Sleeping at random times',           d:'Irregular sleep destroys focus, mood, and worship quality', r:'The Prophet ﷺ valued routine — it creates barakah' },
+      ],
+    },
+    fail: {
+      '10yr': [
+        { t:'Inconsistency disguised as "rest"',  d:'Resting is necessary. Avoiding effort indefinitely is failure with a kind name.', r:'"Take benefit of five before five: health before illness." — Hadith' },
+        { t:'Waiting for the "right time"',       d:'Perfect conditions never arrive. The right time is always now.', r:'Procrastination is one of the subtlest weapons of Shaytan' },
+        { t:'Losing the "why" behind health',     d:'When health becomes about vanity alone, motivation collapses', r:'Niyyah is the engine — if it breaks, everything stalls' },
+      ],
+      '5yr': [
+        { t:'Environments that pull you back',    d:'Without boundaries, your environment defeats your goals', r:'"A person follows the religion of his close friend." — Abu Dawud' },
+        { t:'Ramadan disrupting the routine',     d:'Ramadan is not an excuse to abandon health — recalibrate', r:'Ramadan trains the nafs — use it to strengthen, not break, your habits' },
+        { t:'No accountability partner',          d:'Solo commitment alone has a low success rate', r:'Islam emphasises the ummah — we rise together' },
+      ],
+      '1yr': [
+        { t:'Emotional eating after hardship',    d:'Turning to food instead of dua and sabr is a failure pattern', r:'"With every hardship comes ease." — Quran 94:6' },
+        { t:'Comparing year-one to year-five',   d:'Jealousy of others\' progress poisons your own journey', r:'Hasad is explicitly warned against in Islam' },
+        { t:'No clear tracking or milestones',    d:'What is not measured is not managed', r:'Allah loves the believer who is precise and thorough' },
+      ],
+      '6mo': [
+        { t:'Giving up after first injury',       d:'An injury is a pause, not the end', r:'Recover with sabr, not despair' },
+        { t:'Reward-eating after every workout',  d:'"I exercised so I deserve junk" — this nullifies all progress', r:'Discipline in one area must not be undermined by weakness in another' },
+        { t:'Choosing scrolling over movement',   d:'Passive consumption instead of activity — a slow defeat', r:'The nafs prefers comfort — the mujahid overrules it' },
+      ],
+      '1mo': [
+        { t:'Setting too many goals at once',     d:'Fixing everything in one month means fixing nothing', r:'One habit done consistently beats ten abandoned after a week' },
+        { t:'Perfectionism that leads to quitting',d:'"I ate badly once, so the month is ruined" — Shaytan\'s logic', r:'Tawbah applies to habits too — restart immediately' },
+        { t:'No environmental design',            d:'Willpower alone always eventually fails', r:'The Prophet ﷺ removed temptation — he didn\'t just resist it' },
+      ],
+      '1wk': [
+        { t:'Relying on motivation alone',        d:'Motivation is a feeling — systems and niyyah outlast it', r:'"The most beloved deeds are those done consistently." — Hadith, Bukhari' },
+        { t:'Weekend collapse',                   d:'Disciplined weekdays, abandoned weekends — the gap widens silently', r:'Consistency requires the same effort on easy days as hard ones' },
+        { t:'Binge-sleeping on Sunday',           d:'Disrupts the rhythm — protect it like your prayer schedule', r:'Barakah lives in routine — protect it' },
+      ],
+      'daily': [
+        { t:'Yesterday\'s failure becomes today\'s excuse', d:'"I didn\'t walk yesterday so why bother today" — the most dangerous thought', r:'Every day is a new start. That is the mercy of Allah.' },
+        { t:'Starting the day with the phone',    d:'Reaching for screens before Fajr sets the wrong hierarchy', r:'Start with Allah, then your body, then the world' },
+        { t:'Underestimating small actions',      d:'"5 minutes doesn\'t count" — it always counts', r:'"Even a smile is sadaqah." Small acts have infinite weight in Islam.' },
+      ],
+    },
+    mva: {
+      '10yr': [
+        { a:'Do one physical thing each decade',    w:'A 10-year commitment doesn\'t require perfection — it requires never fully stopping', r:'"The most beloved deeds to Allah are those done consistently, even if small." — Sahih Bukhari' },
+        { a:'Annual health check-up',              w:'One appointment per year that tells the truth about your body', r:'The body is an amanah — inspect it honestly at least once a year' },
+        { a:'One honest conversation with yourself about health', w:'Every few months, ask: am I honouring this trust? No elaborate ritual needed.', r:'Muhasabah (self-accounting) is a Quranic command — Al-Hashr 59:18' },
+      ],
+      '5yr': [
+        { a:'Walk 5 minutes on the hardest day',   w:'This is your floor. When everything falls apart — 5 minutes. No less.', r:'"Begin, and Allah will bless your beginning." — Islamic wisdom' },
+        { a:'Eat one whole meal this week',         w:'Not a perfect diet — just one genuinely nourishing meal when life is hard', r:'One date and water was enough for the Prophet ﷺ on the hardest days' },
+        { a:'Sleep before 1am',                    w:'When the full routine collapses, this single boundary keeps the minimum alive', r:'The body has a right over you — honour it with the minimum when you can\'t give the maximum' },
+      ],
+      '1yr': [
+        { a:'Any movement, any duration',          w:'Sick, busy, or broken — stand up and move for any amount of time', r:'The chain is everything. One link is enough to hold it.' },
+        { a:'One glass of water before anything',  w:'The simplest physical act that keeps the health identity alive every single day', r:'Every great journey starts with one step. Every great health habit starts with one glass.' },
+        { a:'Be in bed by midnight',               w:'Not perfect sleep — just horizontal, phone down, by midnight', r:'Even the minimum of rest is better than none for a body that worships Allah tomorrow' },
+      ],
+      '6mo': [
+        { a:'A 2-minute walk outside',             w:'Leave the door, breathe outside air, come back. That is enough today.', r:'Even the smallest consistent effort is recorded. Allah does not waste a deed.' },
+        { a:'3 glasses of water',                  w:'Half the goal is still a pass on the hardest days', r:'The believer in hardship is still a believer. Keep going with what you have.' },
+        { a:'Lie down by 11:30pm',                 w:'You may not sleep immediately — but the body position signals rest to your system', r:'Consistency in intent counts, even when execution is imperfect' },
+      ],
+      '1mo': [
+        { a:'Walk to the end of the street',       w:'Literally walk outside and return. This single act preserves the habit identity.', r:'"A small act done regularly is greater than a large act done rarely." — Islamic principle' },
+        { a:'Drink water with every meal',          w:'Attach hydration to something you already do — meals exist regardless of willpower', r:'Habit stacking is the sunnah principle of consistency in practice' },
+        { a:'Sleep at the same time — even on weekends', w:'One anchor keeps the entire rhythm from collapsing', r:'The Prophet ﷺ maintained his routines with remarkable consistency' },
+      ],
+      '1wk': [
+        { a:'One 10-minute walk this week',        w:'Just one. Non-negotiable. Everything else is bonus.', r:'Do not belittle any good deed, even meeting your brother with a cheerful face. — Hadith, Muslim' },
+        { a:'Drink a glass of water when you wake', w:'One moment, every morning — builds the identity even in the worst weeks', r:'The morning is a gift. Receive it with water and gratitude.' },
+        { a:'Be in bed 30 minutes earlier than last week', w:'Progress, not perfection — even 30 minutes of improvement is real change', r:'Gradual and consistent. The sunnah of sustained growth.' },
+      ],
+      'daily': [
+        { a:'Stand up and walk to another room',   w:'This is your true minimum. Too sick? Rest. Otherwise — stand up, move, and the day counts.', r:'"Your body has a right over you." — Sahih Bukhari. Honour it with the minimum.' },
+        { a:'One sip of water upon waking',        w:'A single sip. That\'s all. The habit survives on this when nothing else works.', r:'The greatest mercy is in the smallest consistent action' },
+        { a:'Be horizontal by midnight',           w:'No phone ideal. Eyes closed ideal. But horizontal by midnight — this is the absolute floor.', r:'Even the body of the believer deserves its right to rest' },
+      ],
+    },
+  },
+
+  // ══════════ KNOWLEDGE ══════════
+  knowledge: {
+    intro: {
+      icon: '📖',
+      verse: '"Read! In the name of your Lord who created."',
+      ref: '— Surah Al-Alaq, 96:1 — The first word revealed to the Prophet ﷺ',
+    },
+    goals: {
+      '10yr': [
+        { t:'Read 100+ meaningful books',         d:'Across faith, science, history, and personal mastery', r:'"Seek knowledge from the cradle to the grave." — Hadith' },
+        { t:'Master one professional skill deeply',d:'Deep expertise that opens doors and earns halal provision', r:'Excellence (ihsan) in your work is itself an act of worship' },
+        { t:'Teach and share your knowledge',     d:'Mentor others, write, or speak — knowledge shared is sadaqah jaariyah', r:'"The best of you are those who learn and teach." — Hadith, Tirmidhi' },
+      ],
+      '5yr': [
+        { t:'Read 50 books total',                d:'10 books per year across faith, history, and your field', r:'Your tradition loves knowledge — honour it' },
+        { t:'Complete a course or certification', d:'A formal credential that validates your expertise', r:'Develop your skills as a form of khalifah on earth' },
+        { t:'Begin sharing knowledge publicly',   d:'Study group, blog, or informal teaching in your community', r:'"When a man dies, his deeds end except for three... beneficial knowledge." — Hadith, Muslim' },
+      ],
+      '1yr': [
+        { t:'Read 12 books (1 per month)',        d:'A mix of tafsir, self-development, and your field', r:'Reading is dhikr when the subject glorifies truth' },
+        { t:'Complete one online course',         d:'Choose one skill — start and finish it', r:'Finishing what you start is a form of amanah to yourself' },
+        { t:'Journal at least once a week',       d:'Writing clarifies thinking and builds self-knowledge', r:'Muhasabah is a Quranic command — Al-Hashr 59:18' },
+      ],
+      '6mo': [
+        { t:'Read 6 books',                       d:'One every 3–4 weeks — choose topics that excite you', r:'Love of learning is love of truth, which is an attribute of Allah' },
+        { t:'Progress 50% through a course',      d:'Enrol and reach the halfway mark', r:'Begin with what is most important — fiqh al-awlawiyyat' },
+        { t:'Make reading enjoyable',             d:'Reading should feel like rest — find books that speak to your soul', r:'If you hate it, you will not sustain it' },
+      ],
+      '1mo': [
+        { t:'Finish 1 book this month',           d:'Any book — start and complete it', r:'Completion is a habit. Build it with small books first.' },
+        { t:'Learn one new concept each week',    d:'Podcast, article, or video — pick one and engage fully', r:'The believer should never stop growing in understanding' },
+        { t:'Write 4 journal entries',            d:'One per week — reflect on lessons and internal states', r:'Muhasabah before you are held accountable — Al-Ghazali' },
+      ],
+      '1wk': [
+        { t:'Read 20 pages this week',            d:'3–4 pages a day — start small', r:'The drop of water that splits the rock is not force, but consistency' },
+        { t:'Learn one new thing intentionally',  d:'One documentary, podcast, or article — engage fully', r:'Every piece of true knowledge brings you closer to understanding creation' },
+        { t:'Reflect and journal once',           d:'5–10 minutes on the week\'s biggest lesson', r:'"Call yourself to account before you are called to account." — Umar ibn al-Khattab (ra)' },
+      ],
+      'daily': [
+        { t:'Read 2 pages — nothing less',        d:'So small it is impossible to skip. Even on the hardest days.', r:'"The most beloved deeds to Allah are those done consistently." — Hadith, Bukhari' },
+        { t:'Replace one scroll with learning',   d:'10 minutes of social media swapped for a podcast or article', r:'Your time is your life. Every minute given to distraction is a minute not given to growth.' },
+        { t:'Ask: what did I learn today?',       d:'At night, before sleep — one sentence. Write it or think it.', r:'Tafakkur (reflection) is worship. The Quran commands it over 50 times.' },
+      ],
+    },
+    antigoals: {
+      '10yr': [
+        { t:'Riya — knowledge as status',         d:'Seeking knowledge to argue or feel superior', r:'"Whoever learns knowledge to argue with scholars... his seat is in hellfire." — Ibn Majah' },
+        { t:'Jahl mubeen (wilful ignorance)',      d:'Deliberately avoiding growth in deen, work, or world', r:'"Are those who know equal to those who do not know?" — Quran 39:9' },
+        { t:'Knowledge without action',           d:'Accumulating books without changing character', r:'"The scholar whose knowledge does not benefit him is like a lamp that burns others but not itself." — Al-Ghazali' },
+      ],
+      '5yr': [
+        { t:'One-dimensional specialisation',     d:'Only religious OR only worldly knowledge — Islam demands both', r:'The ideal Muslim is strong in deen AND craft' },
+        { t:'Consuming without producing',        d:'Endless podcasts, zero writing or teaching', r:'Knowledge not shared is a missed amanah' },
+        { t:'Arrogance toward those who know less',d:'Feeling superior to others — the most dangerous trap of the learned', r:'"Kibr is rejecting truth and looking down on people." — Hadith, Muslim' },
+      ],
+      '1yr': [
+        { t:'Binge-learning without application', d:'Finishing 20 books but changing nothing in your life', r:'Knowledge is a means to taqwa — if taqwa doesn\'t grow, the knowledge hasn\'t landed' },
+        { t:'Reading only what you agree with',   d:'The echo chamber of comfortable books', r:'"Listen to speech and follow the best of it." — Quran 39:18' },
+        { t:'Chasing trends over depth',          d:'Always the hot new book instead of going deep', r:'One book read deeply outweighs ten books skimmed' },
+      ],
+      '6mo': [
+        { t:'Screen time disguised as learning',  d:'Watching reaction videos and calling it content — be honest', r:'Self-deception (ghurur) is a spiritual illness. Be honest about your time.' },
+        { t:'Learning as avoidance',              d:'Using study to avoid prayer, family, or real work', r:'Knowledge-seeking is obligatory — but must not replace other obligations' },
+        { t:'Passive listening without reflection',d:'Podcasts on while distracted — no retention, no growth', r:'Tafakkur is what transforms information into wisdom' },
+      ],
+      '1mo': [
+        { t:'Starting 10 books and finishing zero',d:'The collector trap — buying and starting, never completing', r:'Finishing is a form of amanah to yourself' },
+        { t:'Journalling only negativity',         d:'Using your journal to ruminate rather than reflect and plan', r:'Muhasabah should lead to tawbah — not despair' },
+        { t:'Learning at the expense of family',  d:'Every evening reading while neglecting family rights', r:'Family has huquq (rights) over your time — balance is fard' },
+      ],
+      '1wk': [
+        { t:'Deferring reading to "the weekend"', d:'The weekend never comes — or exhaustion takes over', r:'Daily drops become an ocean. Weekly bursts evaporate.' },
+        { t:'Instagram infographics as "learning"',d:'Not the same as reading a chapter of a book', r:'Depth over breadth — always' },
+        { t:'Not writing down what you learned',  d:'Ideas not captured are ideas lost forever', r:'"Knowledge is a hunted prey — tie it down with writing." — Ali ibn Abi Talib (ra)' },
+      ],
+      'daily': [
+        { t:'Replacing reading with scrolling',   d:'The default is always the path of least resistance', r:'The nafs will always choose comfort. The \'aql must override it.' },
+        { t:'Learning without bismillah',         d:'Starting study without niyyah of seeking Allah\'s pleasure', r:'Every act begins with bismillah — including the pursuit of knowledge' },
+        { t:'Judging others for knowing less',    d:'Every moment of feeling superior is wasted barakah', r:'Tawadu\' (humility) is the soil in which true knowledge grows' },
+      ],
+    },
+    fail: {
+      '10yr': [
+        { t:'Never becoming a teacher',           d:'10 years of learning that stays entirely within you', r:'"Knowledge not shared is like wealth not given in sadaqah." — Islamic wisdom' },
+        { t:'Knowledge replacing taqwa',          d:'Becoming a scholar but losing personal humility and connection to Allah', r:'Iblis knew more theology than any human — knowledge without humility destroys' },
+        { t:'Burnout from over-commitment',       d:'Trying to learn everything, master everything, teach everything — then collapsing', r:'Wasatiyyah (balance) is a pillar of Islam — apply it to learning too' },
+      ],
+      '5yr': [
+        { t:'Never finishing a single course',    d:'Enrolling and quitting becomes the pattern', r:'Whatever you begin with the name of Allah, complete with the name of Allah' },
+        { t:'Losing curiosity to busyness',       d:'Work and family crowd out all intellectual growth', r:'"Seeking knowledge is an obligation upon every Muslim." — Ibn Majah' },
+        { t:'No structured study environment',    d:'No quiet space, no schedule — learning never becomes a habit', r:'The Prophet ﷺ chose specific times and places for reflection' },
+      ],
+      '1yr': [
+        { t:'Unrealistic reading targets',        d:'"50 books this year" then quitting by February', r:'Set small goals that guarantee a win — momentum is everything at the start' },
+        { t:'No learning community',              d:'Studying alone with no halaqah or mentor', r:'Knowledge in community is how Islam transmitted its tradition for 1400 years' },
+        { t:'Confusing busyness with productivity',d:'A full calendar that produces no real learning', r:'"Beware of being busy with what is less important." — Ibn al-Qayyim' },
+      ],
+      '6mo': [
+        { t:'Skipping reflection entirely',       d:'Reading without pausing — nothing is retained or applied', r:'Al-Ghazali: "The sign that knowledge has entered the heart is that behaviour changes"' },
+        { t:'Switching subjects every few weeks', d:'Restless topic-hopping that never reaches depth', r:'The scholars of Islam specialised deeply — go vertical, not just horizontal' },
+        { t:'Comparing your beginning to mastery',d:'Seeing a scholar and feeling hopeless about your start', r:'"Every expert was once a beginner." A truth that transcends centuries.' },
+      ],
+      '1mo': [
+        { t:'Entertainment over education — every night', d:'The gap between who you are and who you could be widens silently', r:'Time is the most irreplaceable resource. It will not return.' },
+        { t:'No written record',                  d:'Reading without notes — 90% disappears within a week', r:'"Write knowledge down." — Command of Ali ibn Abi Talib (ra)' },
+        { t:'Learning when exhausted',            d:'Poor timing leads to zero retention and eventual abandonment', r:'Learn when the mind is fresh — preferably after Fajr' },
+      ],
+      '1wk': [
+        { t:'Screens stealing reading time',      d:'The phone is always in reach. The book requires intention.', r:'Digital distraction is the greatest threat to deep thinking in our age' },
+        { t:'No clear book or topic this week',   d:'"I\'ll read something" always loses to "I\'ll read chapter 3"', r:'Whoever fails to plan, plans to fail' },
+        { t:'Not protecting your learning window',d:'Allowing interruptions to kill your one daily reading session', r:'Guard your 20 minutes of learning like you guard your salah time' },
+      ],
+      'daily': [
+        { t:'Waiting until you "feel like it"',   d:'You will rarely feel like reading at the end of a long day', r:'"The nafs is inclined toward ease." — Al-Ghazali. Override it with discipline.' },
+        { t:'Forgetting the niyyah',              d:'Reading without remembering it is an act of ibadah — it becomes soulless routine', r:'Reset your niyyah every single day. It changes everything.' },
+        { t:'One miss becoming the new standard', d:'Missing one day is human. Deciding that missing is fine is surrender.', r:'Tawbah is immediate. Return — today, now, without drama.' },
+      ],
+    },
+    mva: {
+      '10yr': [
+        { a:'Read one meaningful book every year at minimum', w:'Even in the hardest years — one book. That is the floor for a decade of growth.', r:'"Seek knowledge from the cradle to the grave." — Hadith' },
+        { a:'Teach one thing to one person per year',         w:'Share one lesson, one hadith, one insight — the chain of knowledge must not break with you', r:'Sadaqah jaariyah through knowledge requires only one transfer to be real' },
+        { a:'Keep a journal — even one entry per month',      w:'12 entries per year is your absolute minimum of muhasabah', r:'"Call yourself to account before you are called to account." — Umar ibn al-Khattab (ra)' },
+      ],
+      '5yr': [
+        { a:'Read 2 books per year at the very least',        w:'On the worst years — two books. That is the knowledge chain kept alive.', r:'Even two reads per year compounds into meaningful growth over five years' },
+        { a:'Finish one course in five years',                w:'Not one per year — just one in five years, fully completed', r:'Completion is a habit — even one completion changes your identity' },
+        { a:'One intentional learning conversation per month',w:'A conversation where you specifically set out to learn from someone wiser', r:'"Take wisdom wherever you find it." — Islamic principle of hikmah' },
+      ],
+      '1yr': [
+        { a:'6 books minimum — half the annual goal',         w:'If 12 feels impossible, 6 is your floor. Still far ahead of most.', r:'Half of something is infinitely more than nothing' },
+        { a:'Complete 25% of one course',                     w:'Not the full course — just the first quarter. Keep moving.', r:'Begin and Allah will put barakah in your beginning' },
+        { a:'Write one journal entry per month',              w:'12 entries. One per month. The minimum that keeps self-reflection alive.', r:'Muhasabah done rarely is better than never done at all' },
+      ],
+      '6mo': [
+        { a:'Read 1 book in 6 months if nothing else',        w:'This is the basement floor. One book in six months. Do not go below this.', r:'Even one book of knowledge is a light that cannot be extinguished' },
+        { a:'Watch one educational video per week',           w:'When reading fails, video learning counts. Use what works.', r:'Knowledge has many doors — enter through the one available to you' },
+        { a:'Reflect once this month — just once',            w:'Set a 5-minute timer. Think about your growth. Write one line.', r:'Even a moment of sincere tafakkur has weight with Allah' },
+      ],
+      '1mo': [
+        { a:'Read 5 pages this month',                        w:'Not a chapter, not a book — 5 pages. That is your absolute minimum this month.', r:'Five pages of truth is better than a hundred pages of distraction' },
+        { a:'Listen to one educational podcast episode',      w:'20 minutes of intentional learning — in a commute, on a walk, anywhere', r:'Knowledge adapts to circumstances. The niyyah is what Allah sees.' },
+        { a:'Write three sentences of reflection this month', w:'Date. What you learned. How you felt. Three sentences. That\'s the MVA of muhasabah.', r:'The shortest honest accounting is still an accounting' },
+      ],
+      '1wk': [
+        { a:'Read 5 pages — non-negotiable',                  w:'This is your weekly floor. 5 pages. Every week. No exceptions.', r:'"The most beloved deeds to Allah are those done consistently, even if small." — Hadith, Bukhari' },
+        { a:'One moment of intentional learning',             w:'An article, a clip, a hadith explained — one moment of seeking truth', r:'Every true thing learned is a step toward the Creator of all truth' },
+        { a:'One sentence of reflection before Friday night', w:'"This week I learned ___." Just that sentence. Write it anywhere.', r:'Jumu\'ah is the weekly reset — bring one lesson to it' },
+      ],
+      'daily': [
+        { a:'Read 1 page — just one',                         w:'One page per day is 365 pages per year. That is more than one full book. This is your floor.', r:'"Do not belittle any good deed." — Hadith, Muslim. Not even one page.' },
+        { a:'Ask one curious question today',                 w:'To yourself, to someone else, or to a search bar — one genuine question', r:'The first word revealed was Iqra (Read). The second was about the pen. Curiosity is divine.' },
+        { a:'Think about what you learned today — for 60 seconds', w:'Not journalling. Not writing. Just 60 seconds of honest reflection before you sleep.', r:'Tafakkur for one hour is better than a year of worship — Ali ibn Abi Talib (ra)' },
+      ],
+    },
+  },
+
+  // ══════════ RELIGION ══════════
+  religion: {
+    intro: {
+      icon: '🕌',
+      verse: '"Indeed, prayer has been decreed upon the believers at specified times."',
+      ref: '— Surah An-Nisa\', 4:103',
+    },
+    goals: {
+      '10yr': [
+        { t:'Deep understanding of your deen',    d:'Not just practice — true comprehension of \'aqeedah, fiqh, and spirituality', r:'"Whoever Allah intends good for, He gives understanding of the religion." — Hadith, Bukhari' },
+        { t:'Become a spiritual guide for others',d:'Lead your family, mentor younger Muslims, or serve your community', r:'The best of people are those most beneficial to others — Hadith' },
+        { t:'Live fully values-aligned',          d:'Every major decision rooted in taqwa', r:'"Taqwa is here." — The Prophet ﷺ pointed to his chest, three times.' },
+      ],
+      '5yr': [
+        { t:'Complete the Quran with reflection', d:'Read with tafsir — understanding, not just recitation', r:'"The best of you are those who learn the Quran and teach it." — Hadith, Bukhari' },
+        { t:'Serve actively in your community',   d:'Lead, volunteer, or contribute meaningfully in a mosque', r:'Contributing to the ummah is a form of fard kifayah' },
+        { t:'Unbreakable daily worship',          d:'Salah, dhikr, and adhkar as natural as breathing', r:'"Establish prayer for My remembrance." — Quran 20:14' },
+      ],
+      '1yr': [
+        { t:'Complete the Quran once fully',      d:'Cover every surah with basic reflection', r:'"Whoever reads a letter from the Book of Allah will receive a hasanah." — Tirmidhi' },
+        { t:'Join a faith community or halaqah',  d:'Regular attendance at a mosque or study circle', r:'The ummah is one body — connect yourself to it intentionally' },
+        { t:'Five daily prayers — never missed',  d:'Salah becomes the anchor of your day', r:'"The first matter a servant will be accountable for is the prayer." — Tirmidhi' },
+      ],
+      '6mo': [
+        { t:'Read half the Quran with reflection',d:'Cover 50% at a steady, thoughtful pace', r:'Even one ayah understood is worth more than 100 read without comprehension' },
+        { t:'Attend Jumu\'ah and weekend circles', d:'Weekly worship and learning attendance', r:'Jumu\'ah is an obligation — and a gift. Treat it as both.' },
+        { t:'Morning adhkar every single day',    d:'Day begins with Allah\'s remembrance — before screen, before coffee', r:'"Whoever says Subhanallah 100 times in the morning..." — Hadith' },
+      ],
+      '1mo': [
+        { t:'Read 4 surahs with tafsir',          d:'One per week — slowly, with a tafsir app', r:'"Recite the Quran, for it will come as an intercessor." — Hadith, Muslim' },
+        { t:'Attend all 4 Jumu\'ah prayers',      d:'Show up every Friday this month', r:'Jumu\'ah is the weekly reset. Don\'t miss your reset.' },
+        { t:'Morning reflection ritual — daily',  d:'5 minutes of prayer, dhikr, or du\'a before anything else', r:'"The most beloved deeds to Allah are those done consistently." — Hadith, Bukhari' },
+      ],
+      '1wk': [
+        { t:'Read 1 surah with understanding',    d:'Slow and reflective — meaning over speed', r:'One ayah understood transforms more than a juz\' rushed through' },
+        { t:'All 5 daily prayers on time',        d:'Each salah at its appointed time — not late, not combined carelessly', r:'"Prayer is the pillar of the deen." — Hadith' },
+        { t:'Memorise one new du\'a',             d:'Just one — learn its meaning, not just its words', r:'Du\'a is the marrow of worship — Hadith, Tirmidhi' },
+      ],
+      'daily': [
+        { t:'All 5 prayers — every single day',  d:'This is the foundation. Everything else is built on it.', r:'"The covenant between us and them is prayer." — Hadith, Tirmidhi' },
+        { t:'Morning and evening adhkar',         d:'5 minutes of prescribed remembrance', r:'"Remembrance of Allah is the greatest thing." — Quran 29:45' },
+        { t:'One moment of conscious gratitude',  d:'Name one blessing — out loud or written', r:'"If you are grateful, I will surely increase you in favour." — Quran 14:7' },
+      ],
+    },
+    antigoals: {
+      '10yr': [
+        { t:'Islam as cultural identity only',    d:'Practicing for family or tradition — not genuine taqwa', r:'"Allah does not look at your appearance, but at your hearts and deeds." — Hadith, Muslim' },
+        { t:'Religious arrogance (kibr al-deen)', d:'Using deen to judge or exclude other Muslims', r:'"No one with an atom\'s weight of kibr will enter Jannah." — Hadith, Muslim' },
+        { t:'Separating deen from daily life',    d:'Islam as a Friday-only practice', r:'Islam is a complete way of life — not a weekend module' },
+      ],
+      '5yr': [
+        { t:'Riya (showing off) in worship',      d:'Praying longer when others are watching. Performative piety.', r:'"The thing I fear most for you is minor shirk — riya." — Hadith, Ahmad' },
+        { t:'Bid\'ah without basis',              d:'Adding practices to worship without Quranic or Sunnah grounding', r:'"Every innovation (bid\'ah) is misguidance." — Hadith, Muslim' },
+        { t:'Neglecting family for extra worship',d:'Adding nafl prayers while missing duties to family', r:'Fard duties to family outrank nafl worship' },
+      ],
+      '1yr': [
+        { t:'Praying only when convenient',       d:'Salah at its proper time is obligatory — delaying is a sin', r:'"Woe to those who pray but are heedless of their prayer." — Quran 107:4-5' },
+        { t:'Learning deen without implementing', d:'Knowing 100 hadith about akhlaq while having poor character', r:'Knowledge without action: the Quran compared this to a donkey carrying books — 62:5' },
+        { t:'Isolation from the Muslim community',d:'The "solo Muslim" — disconnected from any mosque or circle', r:'The Prophet ﷺ built an ummah first. Join one.' },
+      ],
+      '6mo': [
+        { t:'Rushing through salah',              d:'Physical motions without presence of heart (khushu\')', r:'"Successful are those who are humble in their prayers." — Quran 23:1-2' },
+        { t:'Skipping Quran entirely',            d:'A Muslim who doesn\'t recite the Quran is spiritually malnourished', r:'"The one who does not recite the Quran is like a ruined house." — Hadith, Tirmidhi' },
+        { t:'Deferring tawbah',                   d:'"I\'ll repent when I\'m older" — one of Shaytan\'s most dangerous deceptions', r:'"Every son of Adam sins, and the best of sinners are those who repent." — Tirmidhi' },
+      ],
+      '1mo': [
+        { t:'Acts of worship on autopilot',       d:'Adhkar said mindlessly — ritual without soul', r:'Khushu\' is the spirit of every act of worship' },
+        { t:'Only asking Allah in difficulty',    d:'Turning to dua only in crisis and abandoning it in ease', r:'"Whoever is pleased that Allah responds in hardship, let him increase du\'a in ease." — Tirmidhi' },
+        { t:'Judging others\' level of practice', d:'Criticising others for missing prayers or other shortcomings', r:'"Do not consider yourself better than any Muslim." — Islamic principle of self-accounting' },
+      ],
+      '1wk': [
+        { t:'Missing Fajr repeatedly',            d:'Fajr is the most important and most difficult prayer. Repeated missing is a warning sign.', r:'"Two rak\'ahs of Fajr are better than this world and everything in it." — Hadith, Muslim' },
+        { t:'Skipping Jumu\'ah without excuse',   d:'Three consecutive Jumu\'ah missed seals the heart', r:'"Whoever misses three Jumu\'ahs out of negligence, Allah will seal his heart." — Abu Dawud' },
+        { t:'Learning without acting',            d:'Attending the halaqah but making no changes to your week', r:'Every knowledge session should produce at least one changed behaviour' },
+      ],
+      'daily': [
+        { t:'Rushed wudu',                        d:'Rushed wudu can invalidate the prayer — this is not minor', r:'Do not build the pillar of deen on a broken foundation' },
+        { t:'Missing adhkar completely',          d:'Most Muslims know them. Most don\'t do them. You are not most Muslims.', r:'"Shall I not tell you the best of your deeds? Remembrance of Allah." — Ibn Majah' },
+        { t:'Going to bed without istighfar',     d:'Ending the day without seeking forgiveness is a missed mercy', r:'"I seek forgiveness from Allah more than 70 times a day." — The Prophet ﷺ himself. — Bukhari' },
+      ],
+    },
+    fail: {
+      '10yr': [
+        { t:'Spiritual plateau (rukud)',          d:'Going through the motions for years without any deepening of faith', r:'The heart either grows or it shrinks. Stagnation is regression.' },
+        { t:'Losing the next generation',         d:'Building your own deen but failing to transmit it to your children', r:'"O you who believe, protect yourselves and your families from a fire." — Quran 66:6' },
+        { t:'Death without having fully repented',d:'Not spiritual weakness — but never turning back from it', r:'"Allah accepts repentance as long as the death rattle has not yet reached the throat." — Tirmidhi' },
+      ],
+      '5yr': [
+        { t:'Community without quality',          d:'Attending the mosque for years but forming no real growth', r:'The ummah is a body — if you are connected but numb, check your spiritual health' },
+        { t:'Emotional deen without \'ilm',       d:'Religion driven by feelings and trends — no grounding in scholarship', r:'"Seek knowledge, for it is a shield." — Imam Ahmad' },
+        { t:'Abandoning deen in hardship',        d:'Tests from Allah causing some to doubt and withdraw entirely', r:'"And We will surely test you..." — Quran 2:155. The test is expected. The response defines you.' },
+      ],
+      '1yr': [
+        { t:'Inconsistent prayer pattern',        d:'Praying 3 days, missing 2 — never building the rhythm of salah', r:'"The first thing a person will be held accountable for is the prayer." — Hadith. Build this now.' },
+        { t:'No Islamic learning community',      d:'Growing in deen alone, with no halaqah, no sheikh', r:'Islam was transmitted through chains of teachers — seek yours' },
+        { t:'Gradual abandonment',                d:'Not leaving Islam dramatically, but slowly reducing until only the name remains', r:'"Shaytan does not stop you with one great sin. He stops you step by step." — Ibn al-Qayyim' },
+      ],
+      '6mo': [
+        { t:'Mood dictating worship',             d:'"I don\'t feel spiritual today so I won\'t pray with presence" — feelings are guests, salah is a pillar', r:'Salah is obligatory regardless of emotional state. Show up.' },
+        { t:'Ramadan as the only month of deen',  d:'Intense Ramadan then complete neglect for 11 months', r:'"The best deeds are those done consistently." The Prophet ﷺ continued his habits after Ramadan.' },
+        { t:'Social pressure to abandon practice',d:'Friends who mock your salah or hijab — and you slowly comply to fit in', r:'"Do not obey the creation in disobedience to the Creator." — Fundamental Islamic principle' },
+      ],
+      '1mo': [
+        { t:'Making exceptions the norm',         d:'"Just this once I\'ll skip Fajr" — said every morning until it becomes the habit', r:'One exception always invites another. Guard the first compromise.' },
+        { t:'Du\'a without tawakkul',             d:'Asking Allah then worrying as though He didn\'t hear', r:'"Call upon Me; I will respond to you." — Quran 40:60. He said it. Believe it.' },
+        { t:'Comparing your iman to scholars\'',  d:'Looking at a great sheikh and feeling spiritually hopeless', r:'Start where you are. Allah judges by effort and sincerity, not by level.' },
+      ],
+      '1wk': [
+        { t:'Always too tired for Fajr',          d:'If Fajr is always missed, something must change: sleep time or priorities', r:'"The prayer of Fajr is witnessed." — Quran 17:78. Will you miss it?' },
+        { t:'Scrolling instead of du\'a at night',d:'The last minutes before sleep are powerful. You fill them with social media.', r:'"Whoever goes to sleep in a state of purity and remembers Allah..." — Hadith, Bukhari' },
+        { t:'Rushing all 5 prayers at once',      d:'Combining or rushing prayers to "get them done" — opposite of salah\'s purpose', r:'"Pray as you have seen me pray." — Hadith, Bukhari. The Prophet ﷺ never rushed.' },
+      ],
+      'daily': [
+        { t:'Missing Fajr — again',               d:'If Fajr is consistently missed, everything else is built on a crack', r:'Fix Fajr first. Everything else follows.' },
+        { t:'No dhikr between prayers',           d:'The time between salah is where the heart is maintained — not dead time', r:'"Remembrance of Allah is greater." — Quran 29:45. Fill the gaps with His name.' },
+        { t:'Deferring repentance to tomorrow',   d:'"I\'ll make tawbah after I stop sinning." Tawbah comes first.', r:'"Turn to Allah in repentance all together." — Quran 24:31. Right now. Not tomorrow.' },
+      ],
+    },
+    mva: {
+      '10yr': [
+        { a:'Never abandon the five pillars — no matter what', w:'Iman, Salah, Zakat, Sawm, Hajj if able. These five are your absolute non-negotiable floor for a lifetime.', r:'"Islam is built upon five." — Hadith, Bukhari & Muslim. Guard them above everything.' },
+        { a:'Read at least one Quran juz\' per year',          w:'30 juz\' in 30 years. One per year. The Quran stays alive in your life.', r:'"Recite the Quran, for it will come as an intercessor for its companions." — Hadith, Muslim' },
+        { a:'Make istighfar a daily habit — no matter the year',w:'On the hardest year of your life — still seek forgiveness every day. This costs nothing and returns everything.', r:'"The Prophet ﷺ sought forgiveness more than 70 times a day." — Hadith, Bukhari' },
+      ],
+      '5yr': [
+        { a:'Pray 3 of 5 prayers on time — every day',        w:'5 out of 5 is the goal. 3 out of 5, on time, consistently — is the MVA that preserves the habit.', r:'Do not abandon salah entirely. Even 3 prayers maintained is a foundation to rebuild from.' },
+        { a:'Attend Jumu\'ah — every week',                    w:'When everything else in your religious life is in disarray, protect Jumu\'ah. It is your weekly reset.', r:'"The best day on which the sun rises is Friday." — Hadith, Muslim' },
+        { a:'Say Bismillah before every action',               w:'The simplest spiritual habit available to any Muslim at any time, in any state', r:'"Every matter of importance not begun with Bismillah is cut off from barakah." — Hadith' },
+      ],
+      '1yr': [
+        { a:'Pray Fajr and Isha every single day',             w:'If you can only protect two prayers — protect these two. They are the most neglected and the most significant.', r:'"Whoever prays Fajr and Isha in congregation is as if he prayed the entire night." — Hadith, Muslim' },
+        { a:'Read one ayah of the Quran daily',                w:'One ayah. Not one page, not one juz\' — one ayah. The Quran stays present in your life.', r:'"Whoever reads a letter of the Book of Allah will have a hasanah for it." — Tirmidhi' },
+        { a:'Make du\'a once a day — even one sentence',       w:'Talk to Allah. Even one sentence. "Ya Allah, guide me." That is enough to maintain the connection.', r:'"Du\'a is worship." — Hadith, Tirmidhi. Even one sentence is an act of worship.' },
+      ],
+      '6mo': [
+        { a:'Pray 5 times — even if very short',              w:'When khushu\' is impossible, still pray. The physical act of showing up maintains the structure.', r:'Salah in haste is still salah. Abandoning it is kufr. Always show up.' },
+        { a:'Read the Quran for 2 minutes daily',             w:'Open the Quran. Read two minutes. Close it. The relationship is maintained.', r:'Two minutes of Quran daily is 730 minutes per year — more than 12 hours with the word of Allah' },
+        { a:'Say Alhamdulillah 10 times every morning',        w:'The simplest form of morning dhikr. 10 words. No wudu required. No space required.', r:'"Whoever says Alhamdulillah 100 times a day..." — Hadith, Bukhari' },
+      ],
+      '1mo': [
+        { a:'Never miss Fajr this month — the one rule',       w:'If you can only commit to one thing in religion this month — make it Fajr. Everything else flows from the morning.', r:'"Two rak\'ahs of Fajr are better than this world and everything in it." — Hadith, Muslim' },
+        { a:'Read one surah of the Quran this month',          w:'Al-Ikhlas takes 15 seconds. Al-Fatiha takes 30. One surah this month — you have no excuse.', r:'"Recite Al-Ikhlas — it is equivalent to one third of the Quran." — Hadith, Bukhari' },
+        { a:'Make istighfar 10 times before sleeping',         w:'10 times. Astaghfirullah. Before your eyes close tonight. This is the minimum of nighttime worship.', r:'"Whoever seeks forgiveness regularly, Allah will relieve him of every distress." — Hadith, Abu Dawud' },
+      ],
+      '1wk': [
+        { a:'Pray all 5 prayers this week — even if sitting',  w:'Sick? Pray sitting. Travelling? Shorten and combine. But do not miss. This is your weekly non-negotiable.', r:'Salah does not fall away in any condition short of loss of consciousness. Pray.' },
+        { a:'Attend Jumu\'ah this Friday',                     w:'One prayer. One sermon. 45 minutes. This week — do not miss it.', r:'"Whoever misses three Jumu\'ahs out of negligence, Allah will seal his heart." — Abu Dawud' },
+        { a:'Say the morning dhikr — just the short version',  w:'Subhanallah 33 times, Alhamdulillah 33 times, Allahu Akbar 34 times. 2 minutes total. Every morning this week.', r:'The morning adhkar are your spiritual armour — put them on before you face the world' },
+      ],
+      'daily': [
+        { a:'Pray Fajr — this is your daily absolute floor',   w:'Everything else can collapse. Fajr must not. Even 2 rak\'ahs prayed alone, late, in bed clothes — pray Fajr.', r:'"Fix Fajr first. Everything else follows." — The universal wisdom of every Islamic scholar' },
+        { a:'Say Bismillah before every action today',         w:'Before eating, before speaking, before working, before sleeping. Bismillah. This costs nothing and sanctifies everything.', r:'"Every important matter not begun with Bismillah is cut off from barakah." — Hadith' },
+        { a:'Say Astaghfirullah 3 times before sleep',         w:'Three words. Three seconds. Your absolute minimum of nighttime remembrance.', r:'"By Allah, I seek forgiveness and repent to Him more than 70 times a day." — Hadith, Bukhari. If the Prophet ﷺ did 70 — you can do 3.' },
+      ],
+    },
+  },
+};
+
+        let currentPillar = 'health';
+        let currentMode = 'goals';
+
+        function showLifeFramework(pillar) {
+            // Update active tab
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.remove('bg-emerald-400', 'text-zinc-950'));
+            document.getElementById('tab-' + pillar).classList.add('bg-emerald-400', 'text-zinc-950');
+            
+            const container = document.getElementById('life-framework-content');
+            container.innerHTML = '';
+            
+            if (pillar === 'all') {
+                renderAllView(container);
+            } else {
+                renderPillarView(container, pillar);
+            }
+        }
+        
+        function renderPillarView(container, pillar) {
+            // Render the framework for a specific pillar
+            const pillarData = DATA[pillar];
+            
+            const html = `
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-8">
+                        <div class="text-6xl mb-4">${pillarData.intro.icon}</div>
+                        <h3 class="text-3xl font-bold mb-2">${pillar.charAt(0).toUpperCase() + pillar.slice(1)}</h3>
+                        <p class="text-emerald-300 italic">"${pillarData.intro.verse}"</p>
+                        <p class="text-xs text-emerald-300 mt-1">${pillarData.intro.ref}</p>
+                    </div>
+                    
+                    <!-- Goals Section -->
+                    <div class="mb-8">
+                        <h4 class="text-xl font-bold mb-4 text-emerald-300">Goals</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${Object.keys(pillarData.goals).map(time => `
+                                <div class="glass border border-zinc-700 rounded-3xl p-5">
+                                    <div class="font-bold mb-3">${time}</div>
+                                    ${pillarData.goals[time].map(item => `
+                                        <div class="mb-3">
+                                            <div class="font-semibold">${item.t}</div>
+                                            <div class="text-sm text-zinc-300">${item.d}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function renderAllView(container) {
+            container.innerHTML = `
+                <div class="text-center">
+                    <p class="text-emerald-300">All pillars view coming soon...</p>
+                </div>
+            `;
+        }
+        
+        let currentHijriYear = (() => {
+            const now = new Date();
+            return gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate()).year;
+        })();
+        
+        function generateEventsForYear(hijriYear) {
+            function hg(hM, hD) {
+                const g = hijriDateToGregorian(hijriYear, hM, hD);
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                return `${g.day} ${months[g.month-1]} ${g.year}`;
+            }
+            return [
+                { id: 1,  title: "Islamic New Year",           hijri: `1 Muharram ${hijriYear}`,           gregorian: hg(1,1),   type: "eid",     category: "celebration", desc: "The beginning of the new Islamic year.",                                  sunnah: "Reflect on the past year and make sincere intentions.",                         icon: "fa-calendar-day" },
+                { id: 2,  title: "Day of Ashura",              hijri: `10 Muharram ${hijriYear}`,          gregorian: hg(1,10),  type: "fasting", category: "fasting",     desc: "Fasting on this day expiates sins of the previous year.",                 sunnah: "Fast on the 9th and 10th of Muharram.",                                         icon: "fa-star" },
+                { id: 3,  title: "Mawlid an-Nabi",             hijri: `12 Rabi' al-Awwal ${hijriYear}`,   gregorian: hg(3,12),  type: "eid",     category: "celebration", desc: "Celebration of the birth of Prophet Muhammad ﷺ.",                        sunnah: "Increase sending salawat upon the Prophet ﷺ.",                                  icon: "fa-birthday-cake" },
+                { id: 4,  title: "Isra and Mi'raj",            hijri: `27 Rajab ${hijriYear}`,            gregorian: hg(7,27),  type: "eid",     category: "celebration", desc: "Night Journey and Ascension of the Prophet ﷺ.",                          sunnah: "Pray and make abundant dua on this blessed night.",                             icon: "fa-cloud-moon" },
+                { id: 5,  title: "Mid-Sha'ban",                hijri: `15 Sha'ban ${hijriYear}`,          gregorian: hg(8,15),  type: "eid",     category: "celebration", desc: "Night of Forgiveness (Laylat al-Bara'ah).",                               sunnah: "Pray, make istighfar and ask for forgiveness.",                                 icon: "fa-star" },
+                { id: 6,  title: "Start of Ramadan",           hijri: `1 Ramadan ${hijriYear}`,           gregorian: hg(9,1),   type: "eid",     category: "fasting",     desc: "The blessed month of fasting and Quran.",                                 sunnah: "Prepare spiritually and physically for the month.",                             icon: "fa-moon" },
+                { id: 7,  title: "Laylatul Qadr",              hijri: `27 Ramadan ${hijriYear}`,          gregorian: hg(9,27),  type: "eid",     category: "fasting",     desc: "The Night of Power. Better than 1000 months.",                           sunnah: "Pray, recite Quran, and make dua all night.",                                   icon: "fa-cloud-moon" },
+                { id: 8,  title: "Eid al-Fitr",                hijri: `1 Shawwal ${hijriYear}`,           gregorian: hg(10,1),  type: "eid",     category: "celebration", desc: "The celebration marking the end of Ramadan.",                             sunnah: "Pay Zakat al-Fitr, attend Eid prayer, visit family.",                           icon: "fa-gift" },
+                { id: 9,  title: "Fasting 6 Days of Shawwal",  hijri: `2–7 Shawwal ${hijriYear}`,        gregorian: hg(10,2),  type: "fasting", category: "fasting",     desc: "Fasting 6 days after Eid al-Fitr is equal to fasting the whole year.",   sunnah: "Fast any 6 days in Shawwal (preferably consecutive).",                          icon: "fa-calendar-check" },
+                { id: 10, title: "Day of Arafah",              hijri: `9 Dhul Hijjah ${hijriYear}`,       gregorian: hg(12,9),  type: "fasting", category: "fasting",     desc: "The most virtuous day for fasting outside of Ramadan.",                   sunnah: "Fast, make abundant dua, and seek forgiveness.",                                icon: "fa-mountain" },
+                { id: 11, title: "Eid al-Adha",                hijri: `10 Dhul Hijjah ${hijriYear}`,      gregorian: hg(12,10), type: "eid",     category: "celebration", desc: "The Festival of Sacrifice.",                                              sunnah: "Perform Qurbani and share meat with family and the poor.",                      icon: "fa-dove" },
+                { id: 12, title: "Days of Tashriq",            hijri: `11–13 Dhul Hijjah ${hijriYear}`,   gregorian: hg(12,11), type: "eid",     category: "celebration", desc: "Days of celebration and eating after Eid al-Adha.",                       sunnah: "Eat, drink and remember Allah during these days.",                              icon: "fa-utensils" }
+            ];
+        }
+        
+        let islamicEvents = generateEventsForYear(currentHijriYear);
+        
+        function renderEvents(filter = 'all') {
+            const container = document.getElementById('events-grid');
+            container.innerHTML = '';
+            
+            let filtered = islamicEvents;
+            if (filter === 'fasting') filtered = islamicEvents.filter(e => e.category === 'fasting');
+            else if (filter === 'eid') filtered = islamicEvents.filter(e => e.category === 'celebration');
+            
+            filtered.forEach(event => {
+                const isFasting = event.category === 'fasting';
+                const html = `
+                    <div onclick="showEventModal(${event.id})" class="modern-card cursor-pointer glass border border-zinc-700 hover:border-emerald-900/60 p-4 rounded-3xl group">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="w-9 h-9 flex-shrink-0 flex items-center justify-center ${isFasting ? 'bg-emerald-900/30 text-emerald-300' : 'bg-amber-900/30 text-amber-300'} rounded-2xl">
+                                    <i class="fa-solid ${event.icon} text-xl"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="event-pill text-center ${isFasting ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300'}">
+                                    ${isFasting ? 'FASTING' : 'CELEBRATION'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="font-extrabold text-xl leading-none tracking-tight">${event.title}</div>
+                            <div class="sunnah-date mt-1">${event.hijri}</div>
+                            <div class="flex justify-between mt-4 items-center">
+                                <span class="font-semibold text-xs text-zinc-400">${event.gregorian}</span>
+                                <i class="fa-solid fa-arrow-right text-emerald-300 group-hover:translate-x-1 transition-all"></i>
+                            </div>
+                        </div>
+                    </div>`;
+                container.innerHTML += html;
+            });
+        }
+        
+        function filterEvents(type) {
+            document.querySelectorAll('[id^="filter-"]').forEach(el => {
+                el.classList.remove('bg-emerald-400', 'text-zinc-900');
+                el.classList.add('bg-zinc-900', 'border', 'border-zinc-700');
+            });
+            const active = document.getElementById('filter-' + type);
+            if (active) {
+                active.classList.add('bg-emerald-400', 'text-zinc-900');
+                active.classList.remove('bg-zinc-900', 'border', 'border-zinc-700');
+            } else {
+                document.getElementById('filter-all').classList.add('bg-emerald-400', 'text-zinc-900');
+            }
+            renderEvents(type);
+        }
+        
+        function showEventModal(id) {
+            const event = islamicEvents.find(e => e.id === id);
+            if (!event) return;
+            
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/80 flex items-end md:items-center justify-center z-[210]`;
+            const savedNote = localStorage.getItem(`event-note-${id}`) || '';
+            
+            modal.innerHTML = `
+                <div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-full md:w-[450px] border border-emerald-900/30 md:rounded-3xl md:m-4 px-6 py-6 rounded-t-3xl">
+                    <div class="flex justify-between">
+                        <div>
+                            <div class="px-4 text-xs w-fit py-1 font-extrabold rounded-[3rem] ${event.category === 'fasting' ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300'}">${event.category.toUpperCase()}</div>
+                            <div class="font-extrabold text-[27px] mt-3 leading-none tracking-tighter">${event.title}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="px-3 py-px text-xs font-bold">${event.hijri}</div>
+                            <div class="text-emerald-300 text-xs">${event.gregorian}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5 text-sm">${event.desc}</div>
+                    
+                    <div class="px-4 py-4 bg-zinc-900 border border-zinc-700 mt-5 rounded-3xl">
+                        <div class="font-extrabold text-xs tracking-wider px-1">SUNNAH PRACTICE</div>
+                        <div class="px-1 text-sm mt-2 leading-tight">${event.sunnah}</div>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <div class="font-extrabold text-xs tracking-wider px-1 mb-1">MY NOTES &amp; PLAN</div>
+                        <textarea id="event-note-${id}" class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-3 text-sm" placeholder="Write your plan or notes for this occasion...">${savedNote}</textarea>
+                    </div>
+                    
+                    <div class="flex gap-3 px-1 pt-6">
+                        <button onclick="saveEventNote(${id}, this)" class="flex-1 px-6 text-xs py-[9px] font-extrabold transition-colors px-7 flex items-center justify-center rounded-[3rem] bg-emerald-300 text-emerald-900 text-sm">SAVE NOTE</button>
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 px-6 text-xs py-[9px] font-extrabold transition-colors px-7 flex items-center justify-center rounded-[3rem] border border-zinc-700 text-sm">CLOSE</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        
+        function saveEventNote(id, btn) {
+            const textarea = document.getElementById(`event-note-${id}`);
+            if (textarea) {
+                localStorage.setItem(`event-note-${id}`, textarea.value);
+                btn.innerHTML = 'Saved!';
+                setTimeout(() => btn.closest('.fixed').remove(), 800);
+            }
+        }
+        
+        function renderPrayerTimes(timings, meta) {
+            const container = document.getElementById('prayer-container');
+            container.innerHTML = '';
+            currentPrayerData = { timings, meta };
+            
+            const prayers = [
+                {name:'Fajr',      time:timings.Fajr,    icon:'fa-cloud-moon'},
+                {name:'Sunrise',   time:timings.Sunrise, icon:'fa-sun'},
+                {name:'Dhuhr',     time:timings.Dhuhr,   icon:'fa-sun'},
+                {name:'Asr',       time:timings.Asr,     icon:'fa-cloud-sun'},
+                {name:'Maghrib',   time:timings.Maghrib, icon:'fa-cloud-moon'},
+                {name:'Isha',      time:timings.Isha,    icon:'fa-moon'},
+                {name:'Midnight',  time:"00:00",          icon:'fa-clock'},
+                {name:'Last Third',time:"03:00",          icon:'fa-moon'}
+            ];
+            
+            const { nextPrayer, currentPrayer } = getPrayerStatus(timings);
+            
+            prayers.forEach(p => {
+                const isNext    = p.name === nextPrayer;
+                const isCurrent = p.name === currentPrayer;
+                
+                let borderClass = 'border-zinc-700';
+                let badge = '';
+                if (isCurrent) {
+                    borderClass = 'border-amber-400 ring-1 ring-amber-400/30';
+                    badge = `<span class="text-[10px] px-2 py-px bg-amber-400 text-zinc-950 rounded-xl font-bold">NOW</span>`;
+                } else if (isNext) {
+                    borderClass = 'border-emerald-400 ring-1 ring-emerald-400/30';
+                    badge = `<span class="text-[10px] px-2 py-px bg-emerald-400 text-emerald-950 rounded-xl font-bold">NEXT</span>`;
+                }
+                
+                const div = document.createElement('div');
+                div.className = `prayer-card px-4 py-[13.5px] glass border ${borderClass} rounded-3xl flex items-center gap-x-[13px]`;
+                div.innerHTML = `
+                    <div class="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-zinc-900 border ${isCurrent ? 'border-amber-900/60' : 'border-emerald-900/60'} rounded-2xl">
+                        <i class="fa-solid ${p.icon} ${isCurrent ? 'text-amber-300' : 'text-emerald-300'} text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-extrabold text-sm flex items-center gap-x-2">
+                            ${p.name}
+                            ${badge}
+                        </div>
+                        <div class="prayer-time font-extrabold ${isCurrent ? 'text-amber-300' : 'text-emerald-300'}">${p.time}</div>
+                    </div>`;
+                container.appendChild(div);
+            });
+            
+            const loc = document.createElement('div');
+            loc.className = `col-span-full mt-1 flex items-center justify-center px-4`;
+            loc.innerHTML = `<div class="px-4 py-2 text-xs flex items-center gap-x-2 text-emerald-300"><i class="fa-solid fa-map-marker-alt"></i> <span class="font-extrabold">${meta.timezone || 'Your Location'}</span></div>`;
+            container.appendChild(loc);
+        }
+        
+        // Returns both the current active prayer and the next upcoming prayer.
+        // "Current" = the prayer whose window is now open (i.e. the most recent prayer that has passed).
+        function getPrayerStatus(timings) {
+            const now = new Date();
+            const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            
+            // Ordered salah list (Sunrise is not a salah so skip for current/next logic)
+            const salah = [
+                {name:'Fajr',    time: timings.Fajr},
+                {name:'Dhuhr',   time: timings.Dhuhr},
+                {name:'Asr',     time: timings.Asr},
+                {name:'Maghrib', time: timings.Maghrib},
+                {name:'Isha',    time: timings.Isha}
+            ];
+            
+            const toSec = t => { const [h,m] = t.split(':').map(Number); return h*3600+m*60; };
+            
+            let currentPrayer = salah[salah.length - 1].name; // default: Isha (overnight)
+            let nextPrayer    = salah[0].name;                // default: Fajr (next day)
+            
+            for (let i = 0; i < salah.length; i++) {
+                const pSec = toSec(salah[i].time);
+                if (nowSec < pSec) {
+                    // Haven't reached this prayer yet — it's next
+                    nextPrayer    = salah[i].name;
+                    currentPrayer = i === 0 ? salah[salah.length - 1].name : salah[i - 1].name;
+                    break;
+                }
+                // If we exhaust the loop, we're past Isha — current=Isha, next=Fajr (tomorrow)
+                if (i === salah.length - 1) {
+                    currentPrayer = salah[i].name;
+                    nextPrayer    = salah[0].name;
+                }
+            }
+            return { currentPrayer, nextPrayer };
+        }
+        
+        async function getPrayerTimes() {
+            const btnText = document.getElementById('location-btn-text');
+            btnText.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Locating...`;
+            
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const { latitude, longitude } = pos.coords;
+                const method = document.getElementById('calc-method').value || '2';
+                
+                try {
+                    const today = new Date();
+                    const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+                    const res = await fetch(`https://api.aladhan.com/v1/timings/${dateStr}?latitude=${latitude}&longitude=${longitude}&method=${method}`);
+                    const data = await res.json();
+                    if (data.code === 200) {
+                        renderPrayerTimes(data.data.timings, data.data.meta);
+                    } else throw new Error();
+                } catch {
+                    renderPrayerTimes({Fajr:"05:42",Sunrise:"07:09",Dhuhr:"12:06",Asr:"15:13",Maghrib:"17:02",Isha:"18:28"}, {timezone:"Australia/Sydney"});
+                }
+                btnText.innerHTML = `Refresh Location`;
+            }, () => {
+                btnText.innerHTML = `Use My Location`;
+                renderPrayerTimes({Fajr:"05:42",Sunrise:"07:09",Dhuhr:"12:06",Asr:"15:13",Maghrib:"17:02",Isha:"18:28"}, {timezone:"Australia/Sydney"});
+            });
+        }
+        
+        function refreshPrayerTimes() {
+            if (currentPrayerData) {
+                renderPrayerTimes(currentPrayerData.timings, currentPrayerData.meta);
+            }
+        }
+        
+        function showPrayerPanel() {
+            if (!currentPrayerData) {
+                alert("Please load prayer times first using your location.");
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/80 flex items-center justify-center z-[240]`;
+            
+            let html = `<div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-full max-w-[400px] border border-emerald-900/30 rounded-3xl p-6">
+                    <div class="font-extrabold text-2xl mb-4">Prayer Panel</div>
+                    <div class="space-y-2 mb-4">`;
+            
+            const t = currentPrayerData.timings;
+            const prayers = [
+                {name:'Fajr', time:t.Fajr},
+                {name:'Dhuhr', time:t.Dhuhr},
+                {name:'Asr', time:t.Asr},
+                {name:'Maghrib', time:t.Maghrib},
+                {name:'Isha', time:t.Isha}
+            ];
+            
+            prayers.forEach((p) => {
+                html += `<div class="flex justify-between items-center px-4 py-3 bg-zinc-900 rounded-2xl">
+                    <div class="font-bold">${p.name}</div>
+                    <div class="text-emerald-300 font-extrabold text-xl">${p.time}</div>
+                </div>`;
+            });
+            
+            html += `</div>
+                    <div class="bg-zinc-900 border border-emerald-900/40 rounded-3xl p-5">
+                        <div class="text-xs text-emerald-300 font-bold">NEXT PRAYER</div>
+                        <div class="flex justify-between items-end mt-1">
+                            <div id="panel-next-prayer" class="font-extrabold text-2xl">Isha</div>
+                            <div id="panel-countdown" class="font-extrabold text-4xl tabular-nums text-emerald-300">02:14:39</div>
+                        </div>
+                    </div>
+                </div>`;
+            
+            modal.innerHTML = html;
+            document.body.appendChild(modal);
+            startPanelCountdown(modal);
+        }
+        
+        function startPanelCountdown(modal) {
+            const interval = setInterval(() => {
+                if (!currentPrayerData || !modal.isConnected) {
+                    clearInterval(interval);
+                    return;
+                }
+                const { name, h, m, s } = calcNextPrayerCountdown(currentPrayerData.timings);
+                const nameEl = modal.querySelector('#panel-next-prayer');
+                const countdownEl = modal.querySelector('#panel-countdown');
+                if (nameEl) nameEl.textContent = name;
+                if (countdownEl) countdownEl.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+        
+        const knowledgeData = [
+            {title: "Fasting of Arafah", content: "Fasting on the 9th of Dhul Hijjah (Day of Arafah) is one of the most virtuous fasts. The Prophet ﷺ said: 'Fasting on the Day of Arafah expiates the sins of the previous year and the coming year.'"},
+            {title: "Laylatul Qadr", content: "The Night of Power is better than 1000 months. It occurs on one of the odd nights of the last ten nights of Ramadan. The Prophet ﷺ encouraged us to seek it especially on the 27th night."},
+            {title: "Fasting of Ashura", content: "Fasting on the 10th of Muharram (Ashura) is highly recommended. Prophet Muhammad ﷺ said: 'Fasting the day of Ashura, I hope Allah will expiate thereby for the year that came before it.'"},
+            {title: "Surah Al-Kahf on Friday", content: "The Prophet ﷺ said: 'Whoever reads Surah Al-Kahf on Friday, it will be a light for him between this Friday and the next.' It is highly recommended to recite it every Friday."},
+            {title: "Dua Before Sleeping", content: "The Prophet ﷺ would recite Ayatul Kursi and the last three Surahs (Al-Ikhlas, Al-Falaq, An-Nas) before sleeping. This provides protection throughout the night."},
+            {title: "Morning & Evening Adhkar", content: "The Prophet ﷺ taught us to recite specific supplications in the morning and evening for protection, forgiveness, and blessings."}
+        ];
+        
+        function showKnowledgeModal(i) {
+            const modal = document.getElementById('knowledge-modal');
+            document.getElementById('modal-header').innerHTML = knowledgeData[i].title;
+            document.getElementById('modal-content').innerHTML = `<p class="leading-relaxed">${knowledgeData[i].content}</p>`;
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+        }
+        
+        function hideKnowledgeModal() {
+            const modal = document.getElementById('knowledge-modal');
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+        }
+        
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        
+        function renderMiniCalendar(month, year) {
+            const container = document.getElementById('mini-calendar');
+            const header = document.getElementById('mini-calendar-header');
+            
+            // Calculate Hijri info for the 1st of this Gregorian month
+            const h1 = gregorianToHijri(year, month + 1, 1);
+            const hLast = gregorianToHijri(year, month + 1, new Date(year, month + 1, 0).getDate());
+            const hijriRange = h1.year === hLast.year && h1.month === hLast.month
+                ? `${hijriMonthName(h1.month)} ${h1.year} AH`
+                : `${hijriMonthName(h1.month)}–${hijriMonthName(hLast.month)} ${hLast.year} AH`;
+            header.innerHTML = `${new Date(year, month).toLocaleString('default', {month:'long'})} ${year} <span class="text-zinc-500">•</span> ${hijriRange}`;
+            container.innerHTML = '';
+            
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+            const today = new Date();
+            
+            const weekdays = ['S','M','T','W','T','F','S'];
+            weekdays.forEach(d => {
+                const el = document.createElement('div');
+                el.className = `font-bold text-emerald-300 py-1`;
+                el.textContent = d;
+                container.appendChild(el);
+            });
+            
+            for (let i = 0; i < firstDay; i++) {
+                container.appendChild(document.createElement('div'));
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = `calendar-day py-[7px] text-center cursor-pointer hover:bg-emerald-900/30`;
+                
+                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+                if (isToday) dayEl.classList.add('today', 'text-white');
+                
+                // Show the Hijri day number as a small sub-label
+                const hDate = gregorianToHijri(year, month + 1, day);
+                dayEl.innerHTML = `<div class="font-medium leading-tight">${day}</div><div class="text-[8px] text-zinc-500 leading-none">${hDate.day}</div>`;
+                dayEl.onclick = () => showDayModal(day, month, year);
+                container.appendChild(dayEl);
+            }
+        }
+        
+        function showDayModal(day, month, year) {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/70 flex items-center justify-center z-[210]`;
+            
+            const dateFormatted = new Date(year, month, day).toLocaleDateString('en-US', {month:'long', day:'numeric'});
+            const hThis = gregorianToHijri(year, month + 1, day);
+            
+            // Match events by converting the clicked day to all Hijri dates it might span
+            // and comparing against the event's known Hijri month/day via hijriDateToGregorian
+            const matchingEvents = islamicEvents.filter(ev => {
+                // ev.gregorian is like "29 Jun 2026" — parse it properly
+                const months3 = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+                const parts = ev.gregorian.split(' ');
+                if (parts.length < 3) return false;
+                const evDay   = parseInt(parts[0], 10);
+                const evMonth = months3[parts[1]];
+                const evYear  = parseInt(parts[2], 10);
+                return evDay === day && evMonth === (month + 1) && evYear === year;
+            });
+            
+            let eventsHTML = '';
+            if (matchingEvents.length > 0) {
+                eventsHTML = matchingEvents.map(ev => `
+                    <div class="px-4 py-3 bg-zinc-900 rounded-2xl mb-2 border border-zinc-800">
+                        <div class="flex items-center gap-x-2 mb-1">
+                            <i class="fa-solid ${ev.icon} text-emerald-400 text-xs"></i>
+                            <div class="font-bold text-sm text-emerald-300">${ev.title}</div>
+                        </div>
+                        <div class="text-xs text-zinc-400">${ev.hijri}</div>
+                        <div class="text-xs text-zinc-300 mt-1">${ev.sunnah}</div>
+                    </div>
+                `).join('');
+            } else {
+                eventsHTML = `<div class="px-4 py-3 text-xs bg-zinc-900 rounded-2xl text-zinc-400">No major Sunnah events on this day</div>`;
+            }
+            
+            modal.innerHTML = `
+                <div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-[320px] border border-emerald-900/30 p-5 rounded-3xl">
+                    <div class="font-extrabold text-xl">${dateFormatted} ${year}</div>
+                    <div class="mt-1 text-xs text-emerald-300 font-semibold">${hThis.day} ${hijriMonthName(hThis.month)} ${hThis.year} AH</div>
+                    <div class="mt-4">
+                        <div class="font-bold mb-2 text-xs tracking-wider text-zinc-400">EVENTS ON THIS DAY</div>
+                        ${eventsHTML}
+                    </div>
+                    <button onclick="this.closest('.fixed').remove()" class="mt-5 w-full py-3 text-sm font-extrabold bg-emerald-300 text-emerald-900 rounded-3xl">Close</button>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        
+        function prevMonth() {
+            currentMonth--;
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            renderMiniCalendar(currentMonth, currentYear);
+        }
+        
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            renderMiniCalendar(currentMonth, currentYear);
+        }
+        
+        function goToToday() {
+            const now = new Date();
+            currentMonth = now.getMonth();
+            currentYear = now.getFullYear();
+            renderMiniCalendar(currentMonth, currentYear);
+        }
+        
+        let calendarPlans = {};
+        
+        function showCalendarPlanner() {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/70 flex items-center justify-center z-[220]`;
+            const dateKey = `${currentYear}-${currentMonth + 1}`;
+            
+            modal.innerHTML = `
+                <div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-full max-w-md border border-emerald-900/30 p-6 rounded-3xl">
+                    <div class="font-extrabold text-xl mb-4">Plan for ${new Date(currentYear, currentMonth).toLocaleString('default', {month:'long'})} ${currentYear}</div>
+                    <textarea id="plan-text" class="w-full h-32 bg-zinc-900 border border-zinc-700 rounded-2xl p-4 text-sm resize-y" placeholder="Write your Sunnah goals for this month...">${calendarPlans[dateKey] || ''}</textarea>
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="saveCalendarPlan('${dateKey}', this)" class="flex-1 py-3 text-sm font-extrabold bg-emerald-300 text-emerald-900 rounded-3xl">Save Plan</button>
+                        <button onclick="this.closest('.fixed').remove()" class="flex-1 py-3 text-sm font-extrabold border border-zinc-700 rounded-3xl">Cancel</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        
+        function saveCalendarPlan(dateKey, btn) {
+            const textarea = document.getElementById('plan-text');
+            calendarPlans[dateKey] = textarea.value;
+            localStorage.setItem('sunnahCalendarPlans', JSON.stringify(calendarPlans));
+            btn.innerHTML = 'Saved!';
+            setTimeout(() => btn.closest('.fixed').remove(), 700);
+        }
+        
+        function changeYear(direction) {
+            currentHijriYear += direction;
+            islamicEvents = generateEventsForYear(currentHijriYear);
+            document.getElementById('current-year-display').innerHTML = `${currentHijriYear} AH`;
+            renderEvents('all');
+            document.querySelectorAll('[id^="filter-"]').forEach(el => {
+                el.classList.remove('bg-emerald-400', 'text-zinc-900');
+                el.classList.add('bg-zinc-900', 'border', 'border-zinc-700');
+            });
+            document.getElementById('filter-all').classList.add('bg-emerald-400', 'text-zinc-900');
+        }
+        
+        let todos = [];
+        
+        function getDailyAutomatedTasks() {
+            const today = new Date();
+            const isFriday = today.getDay() === 5;
+            const isFastingDay = today.getDate() === 25 && today.getMonth() === 5;
+            
+            let tasks = [
+                {id: 1001, text: "Dua upon waking up", time: "5:00 AM", completed: false, automated: true},
+                {id: 1002, text: "Pray 2 rakat Sunnah before Fajr", time: "5:10 AM", completed: false, automated: true},
+                {id: 1003, text: "Recite Ayatul Kursi + 3 Quls (Morning)", time: "5:40 AM", completed: false, automated: true},
+                {id: 1004, text: "Say Tasbeeh after Fajr", time: "6:00 AM", completed: false, automated: true},
+                {id: 1005, text: "Read Quran in the morning (at least 1 page)", time: "6:30 AM", completed: false, automated: true},
+                {id: 1006, text: "Pray 2 rakat Duha", time: "9:00 AM", completed: false, automated: true},
+                {id: 1007, text: "Pray 4 rakat Sunnah before Dhuhr + 2 after", time: "12:00 PM", completed: false, automated: true},
+                {id: 1008, text: "Make Istighfar 100 times", time: "1:00 PM", completed: false, automated: true},
+                {id: 1010, text: "Pray 2 rakat Sunnah before Asr", time: "3:30 PM", completed: false, automated: true},
+                {id: 1011, text: "Give Sadaqah", time: "4:00 PM", completed: false, automated: true},
+                {id: 1012, text: "Make dua for your parents & the Ummah", time: "5:00 PM", completed: false, automated: true},
+                {id: 1013, text: "Recite Ayatul Kursi + 3 Quls (Evening)", time: "6:30 PM", completed: false, automated: true},
+                {id: 1014, text: "Pray 2 rakat Sunnah after Maghrib", time: "7:00 PM", completed: false, automated: true},
+                {id: 1015, text: "Pray Witr (3 rakat) after Isha", time: "9:00 PM", completed: false, automated: true},
+                {id: 1016, text: "Recite Surah Al-Waqi'ah before sleeping", time: "10:00 PM", completed: false, automated: true},
+                {id: 1017, text: "Dua before sleeping", time: "10:30 PM", completed: false, automated: true},
+                {id: 1018, text: "Pray 2 rakat Tahajjud", time: "3:00 AM", completed: false, automated: true},
+                {id: 1019, text: "Smile and be kind to someone today", time: "Anytime", completed: false, automated: true}
+            ];
+            
+            if (isFriday) {
+                tasks.unshift({id: 1020, text: "Read Surah Al-Kahf", time: "After Fajr", completed: false, automated: true});
+                tasks.push({id: 1023, text: "Send Salawat upon the Prophet ﷺ 100 times", time: "After Jumu'ah", completed: false, automated: true});
+            }
+            
+            if (isFastingDay) {
+                tasks.unshift({id: 1021, text: "Intend to fast today (Niyyah)", time: "Before Fajr", completed: false, automated: true});
+                tasks.push({id: 1022, text: "Break fast with dates + water + dua", time: "Maghrib", completed: false, automated: true});
+            }
+            
+            return tasks.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+        }
+        
+        function loadTodos() {
+            const saved = localStorage.getItem('sunnahTodos');
+            todos = saved ? JSON.parse(saved) : getDailyAutomatedTasks();
+        }
+        
+        function saveTodos() {
+            localStorage.setItem('sunnahTodos', JSON.stringify(todos));
+        }
+        
+        function renderTodos(limit = 6) {
+            const container = document.getElementById('todo-list');
+            container.innerHTML = '';
+            
+            todos.slice(0, limit).forEach(todo => {
+                const div = document.createElement('div');
+                div.className = `todo-item flex items-center gap-x-3 px-3 py-2.5 rounded-2xl hover:bg-zinc-900 ${todo.completed ? 'completed' : ''}`;
+                
+                let extra = '';
+                if (todo.text.includes('Dua upon waking')) extra = `<button onclick="showDuaModal('waking'); event.stopImmediatePropagation();" class="text-[10px] px-2 py-px bg-emerald-900/30 text-emerald-300 rounded-xl font-bold">Show Dua</button>`;
+                if (todo.text.includes('Dua before sleeping')) extra = `<button onclick="showDuaModal('sleeping'); event.stopImmediatePropagation();" class="text-[10px] px-2 py-px bg-emerald-900/30 text-emerald-300 rounded-xl font-bold">Show Dua</button>`;
+                
+                const timeBadge = todo.time ? `<span class="text-[10px] px-2 py-px bg-zinc-800 text-emerald-300 rounded-xl font-bold">${todo.time}</span>` : '';
+                
+                div.innerHTML = `
+                    <div onclick="toggleTodo(${todo.id})" class="flex-shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer border ${todo.completed ? 'bg-emerald-300 border-emerald-300' : 'border-zinc-500'} rounded-xl">
+                        ${todo.completed ? `<i class="fa-solid fa-check text-xs text-emerald-900"></i>` : ''}
+                    </div>
+                    <div class="flex-1 text-sm">${todo.text}</div>
+                    ${timeBadge}
+                    ${extra}
+                    ${!todo.automated ? `<div onclick="deleteTodo(${todo.id}, event)" class="px-2 text-red-400 cursor-pointer"><i class="fa-solid fa-times text-xs"></i></div>` : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function showFullTodoModal() {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/70 flex items-center justify-center z-[220]`;
+            
+            let html = `<div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-full max-w-[420px] border border-emerald-900/30 p-6 rounded-3xl max-h-[80vh] overflow-auto">
+                    <div class="flex justify-between items-center mb-5">
+                        <div class="font-extrabold text-2xl">All Tasks</div>
+                        <button onclick="this.closest('.fixed').remove()" class="text-2xl px-2 text-zinc-400">×</button>
+                    </div>
+                    <div class="space-y-1">`;
+            
+            todos.forEach(todo => {
+                const checked = todo.completed ? 'bg-emerald-300 border-emerald-300' : 'border-zinc-500';
+                const icon = todo.completed ? `<i class="fa-solid fa-check text-xs text-emerald-900"></i>` : '';
+                let extra = '';
+                if (todo.text.includes('Dua upon waking')) extra = `<button onclick="showDuaModal('waking'); event.target.closest('.fixed').remove()" class="text-xs px-3 py-1 bg-emerald-900/30 text-emerald-300 rounded-2xl">Show Dua</button>`;
+                if (todo.text.includes('Dua before sleeping')) extra = `<button onclick="showDuaModal('sleeping'); event.target.closest('.fixed').remove()" class="text-xs px-3 py-1 bg-emerald-900/30 text-emerald-300 rounded-2xl">Show Dua</button>`;
+                const timeBadge = todo.time ? `<span class="text-[10px] px-2 py-px bg-zinc-800 text-emerald-300 rounded-xl font-bold">${todo.time}</span>` : '';
+                
+                html += `
+                    <div class="flex items-center gap-x-3 px-3 py-[9px] rounded-2xl hover:bg-zinc-900 ${todo.completed ? 'opacity-60' : ''}">
+                        <div onclick="toggleTodo(${todo.id}); this.closest('.fixed').remove()" class="flex-shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer border ${checked} rounded-xl">${icon}</div>
+                        <div class="flex-1 text-sm">${todo.text}</div>
+                        ${timeBadge}
+                        ${extra}
+                    </div>`;
+            });
+            
+            html += `</div></div>`;
+            modal.innerHTML = html;
+            document.body.appendChild(modal);
+        }
+        
+        function showDuaModal(type) {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/70 flex items-center justify-center z-[230]`;
+            
+            let content = type === 'waking' ? 
+                `<div class="px-1"><div class="font-extrabold text-xl mb-2">Dua upon Waking Up</div><div class="bg-zinc-900 p-4 rounded-2xl text-sm leading-relaxed"><span class="font-bold text-emerald-300">الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ</span><br><br><span class="text-xs">"Alhamdu lillahil-ladhi ahyana ba'da ma amatana wa ilayhin-nushur"</span></div></div>` :
+                `<div class="px-1"><div class="font-extrabold text-xl mb-2">Dua before Sleeping</div><div class="bg-zinc-900 p-4 rounded-2xl text-sm leading-relaxed"><span class="font-bold text-emerald-300">بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا</span><br><br><span class="text-xs">"Bismika Allahumma amutu wa ahya"</span></div></div>`;
+            
+            modal.innerHTML = `
+                <div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-[340px] border border-emerald-900/30 p-6 rounded-3xl">
+                    ${content}
+                    <button onclick="this.closest('.fixed').remove()" class="mt-5 w-full py-3 text-sm font-extrabold bg-emerald-300 text-emerald-900 rounded-3xl">Done</button>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        
+        function addTodo() {
+            const input = document.getElementById('todo-input');
+            if (!input.value.trim()) return;
+            todos.unshift({id: Date.now(), text: input.value.trim(), completed: false, automated: false});
+            saveTodos();
+            input.value = '';
+            renderTodos();
+        }
+        
+        function toggleTodo(id) {
+            todos = todos.map(t => t.id === id ? {...t, completed: !t.completed} : t);
+            saveTodos();
+            renderTodos();
+        }
+        
+        function deleteTodo(id, e) {
+            e.stopImmediatePropagation();
+            todos = todos.filter(t => t.id !== id);
+            saveTodos();
+            renderTodos();
+        }
+        
+        function resetDailyTasks() {
+            if (confirm('Reset all daily automated tasks?')) {
+                todos = getDailyAutomatedTasks();
+                saveTodos();
+                renderTodos();
+            }
+        }
+        
+        function showProfileModal() {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/70 z-[200] flex items-center justify-center`;
+            modal.innerHTML = `
+                <div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-[300px] border-emerald-900/30 border px-6 py-7 rounded-3xl">
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto flex items-center justify-center bg-emerald-900/30 rounded-[3rem]">
+                            <i class="fa-solid fa-user text-4xl text-emerald-300"></i>
+                        </div>
+                        <div class="mt-5">
+                            <div class="font-extrabold text-xl">Aisha Rahman</div>
+                            <div class="text-xs text-emerald-300 font-bold">Sydney, Australia</div>
+                        </div>
+                        <div class="mt-5 grid grid-cols-3 gap-3 text-center">
+                            <div><div class="font-extrabold">47</div><div class="text-xs text-zinc-400">Days fasted</div></div>
+                            <div><div class="font-extrabold">124</div><div class="text-xs text-zinc-400">Prayers tracked</div></div>
+                            <div><div class="font-extrabold">19</div><div class="text-xs text-zinc-400">Events done</div></div>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()" class="mt-6 text-xs w-full transition-colors py-3 text-center font-extrabold bg-emerald-300 text-emerald-900 rounded-[3rem]">Manage Account</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        
+        function showFullscreenTimer() {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black z-[300] flex items-center justify-center`;
+            
+            const now = new Date();
+            const currentTime = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const currentDate = now.toLocaleDateString('en-US', {month:'long', day:'numeric'});
+            
+            modal.innerHTML = `
+                <div class="text-center max-w-2xl px-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <div class="text-left">
+                            <div class="text-emerald-300 text-sm">CURRENT TIME</div>
+                            <div id="fs-current-time" class="font-extrabold text-4xl text-white">${currentTime}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-emerald-300 text-sm">TODAY</div>
+                            <div class="font-bold text-2xl text-white">${currentDate} • 22 Jumada II 1447</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <div class="text-emerald-300 text-xl tracking-[6px] font-medium mb-2">NEXT PRAYER</div>
+                        <div id="fs-prayer-name" class="font-extrabold text-[110px] leading-none text-white">ISHA</div>
+                        <div id="fs-countdown" class="font-extrabold text-[120px] tabular-nums text-emerald-400 mt-1">02:14:39</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-5 gap-4 text-center mb-8" id="fs-prayer-grid">
+                        <div><div class="text-emerald-300 text-sm">FAJR</div><div id="fs-fajr" class="font-bold text-white text-xl">05:42</div></div>
+                        <div><div class="text-emerald-300 text-sm">DHUHR</div><div id="fs-dhuhr" class="font-bold text-white text-xl">12:06</div></div>
+                        <div><div class="text-emerald-300 text-sm">ASR</div><div id="fs-asr" class="font-bold text-white text-xl">15:13</div></div>
+                        <div><div class="text-emerald-300 text-sm">MAGHRIB</div><div id="fs-maghrib" class="font-bold text-white text-xl">17:02</div></div>
+                        <div><div class="text-emerald-300 text-sm">ISHA</div><div id="fs-isha" class="font-bold text-white text-xl">18:28</div></div>
+                    </div>
+                    
+                    <div class="bg-white/5 rounded-3xl px-8 py-4 mb-8">
+                        <div id="fs-advice" class="text-emerald-300 text-lg font-medium">“Whoever prays the Fajr prayer, the angels will pray for him until the sun rises.” — Prophet ﷺ</div>
+                    </div>
+                    
+                    <button onclick="this.closest('.fixed').remove()" class="px-10 py-3 text-sm font-extrabold bg-white/10 hover:bg-white/20 text-white rounded-[3rem]">
+                        EXIT FULLSCREEN
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            if (currentPrayerData) {
+                const t = currentPrayerData.timings;
+                modal.querySelector('#fs-fajr').textContent = t.Fajr;
+                modal.querySelector('#fs-dhuhr').textContent = t.Dhuhr;
+                modal.querySelector('#fs-asr').textContent = t.Asr;
+                modal.querySelector('#fs-maghrib').textContent = t.Maghrib;
+                modal.querySelector('#fs-isha').textContent = t.Isha;
+            }
+            
+            const interval = setInterval(() => {
+                if (!modal.isConnected || !currentPrayerData) {
+                    clearInterval(interval);
+                    return;
+                }
+                const { name, h, m, s } = calcNextPrayerCountdown(currentPrayerData.timings);
+                const nameEl = modal.querySelector('#fs-prayer-name');
+                const countdownEl = modal.querySelector('#fs-countdown');
+                const timeEl = modal.querySelector('#fs-current-time');
+                if (nameEl) nameEl.textContent = name;
+                if (countdownEl) countdownEl.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                if (timeEl) timeEl.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }, 1000);
+        }
+        
+        function showFullToolboxModal() {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/80 flex items-center justify-center z-[260]`;
+            
+            modal.innerHTML = `
+                <div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-full max-w-[880px] border border-emerald-900/30 rounded-3xl p-8 max-h-[92vh] overflow-auto">
+                    <div class="flex justify-between mb-6 items-center sticky top-0 bg-zinc-950 py-2">
+                        <div>
+                            <div class="font-extrabold text-3xl">The Muslim Toolbox</div>
+                            <div class="text-emerald-300 text-sm">Full curated list of Islamic apps, tools &amp; resources</div>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()" class="text-3xl text-zinc-400 hover:text-white">×</button>
+                    </div>
+                    
+                    <div class="text-sm text-zinc-300 leading-relaxed space-y-6">
+                        
+                        <p>A curated list of Islamic and Muslim apps, tools, resources, and aggregators for daily worship, learning, and community. Items with a 🌟 icon are highly recommended.</p>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Curated Lists &amp; Megathreads</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://github.com/choubari/Awesome-Muslims" target="_blank" class="hover:text-emerald-300">Awesome-Muslims</a> 🌟</div>
+                                <div>• <a href="https://github.com/AhmedKamal/awesome-Islam" target="_blank" class="hover:text-emerald-300">Awesome-Islam</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/MuslimLounge/" target="_blank" class="hover:text-emerald-300">r/MuslimLounge</a></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Communities</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://www.reddit.com/r/Quran/" target="_blank" class="hover:text-emerald-300">r/Quran</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/Muslim/" target="_blank" class="hover:text-emerald-300">r/Muslim</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/muslims/" target="_blank" class="hover:text-emerald-300">r/muslims</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/MuslimCorner/" target="_blank" class="hover:text-emerald-300">r/MuslimCorner</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/TraditionalMuslims/" target="_blank" class="hover:text-emerald-300">r/TraditionalMuslims</a></div>
+                                <div>• <a href="https://www.reddit.com/r/IslamicFinance/" target="_blank" class="hover:text-emerald-300">r/IslamicFinance</a></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Mobile Apps</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://haramblur.com/" target="_blank" class="hover:text-emerald-300">Haram Blur</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.karim.khatma" target="_blank" class="hover:text-emerald-300">Khatma</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.islam360" target="_blank" class="hover:text-emerald-300">Islam 360</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.pakdata.QuranMajeed" target="_blank" class="hover:text-emerald-300">Quran Majeed</a> 🌟</div>
+                                <div>• <a href="https://tarteel.ai/" target="_blank" class="hover:text-emerald-300">Tarteel</a> 🌟</div>
+                                <div>• <a href="https://www.pillarsapp.com/" target="_blank" class="hover:text-emerald-300">Pillars</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.islam.hisn" target="_blank" class="hover:text-emerald-300">Hisnul Muslim</a></div>
+                                <div>• <a href="https://mawaqit.net/en/" target="_blank" class="hover:text-emerald-300">Mawaqit</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.quran.labs.androidquran" target="_blank" class="hover:text-emerald-300">Quran by Quran.com</a> 🌟</div>
+                                <div>• <a href="https://zoya.finance/" target="_blank" class="hover:text-emerald-300">Zoya</a> 🌟</div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Desktop &amp; Web Tools</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://quran.com/" target="_blank" class="hover:text-emerald-300">Quran.com</a> 🌟</div>
+                                <div>• <a href="https://sunnah.com/" target="_blank" class="hover:text-emerald-300">Sunnah.com</a></div>
+                                <div>• <a href="https://hifzpath.pages.dev/" target="_blank" class="hover:text-emerald-300">HifzPath</a> 🌟</div>
+                                <div>• <a href="https://seekersguidance.org/" target="_blank" class="hover:text-emerald-300">SeekersGuidance</a></div>
+                                <div>• <a href="https://yaqeeninstitute.org/" target="_blank" class="hover:text-emerald-300">Yaqeen Institute</a></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Learning Platforms</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://zad-academy.com/en" target="_blank" class="hover:text-emerald-300">Zad Academy</a></div>
+                                <div>• <a href="https://simplyislam.academy/" target="_blank" class="hover:text-emerald-300">SimplyIslam Academy</a></div>
+                                <div>• <a href="https://www.almaghrib.org/" target="_blank" class="hover:text-emerald-300">AlMaghrib Institute</a></div>
+                                <div>• <a href="https://bayyinah.tv/" target="_blank" class="hover:text-emerald-300">Bayyinah TV</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 text-center text-xs text-emerald-300">
+                        Full list: <a href="https://github.com/choubari/Awesome-Muslims" target="_blank" class="underline">Awesome-Muslims</a>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function showResourcesModal() {
+            const modal = document.createElement('div');
+            modal.className = `fixed inset-0 bg-black/80 flex items-center justify-center z-[250]`;
+            
+            modal.innerHTML = `
+                <div onclick="event.target.remove()" class="absolute inset-0"></div>
+                <div onclick="event.stopImmediatePropagation()" class="glass w-full max-w-[720px] border border-emerald-900/30 rounded-3xl p-8 max-h-[85vh] overflow-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <div class="font-extrabold text-3xl">Resources &amp; Tools</div>
+                            <div class="text-emerald-300 text-sm">Curated Islamic apps, websites, and learning platforms</div>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()" class="text-3xl text-zinc-400 hover:text-white">×</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="glass border border-zinc-700 rounded-3xl p-5">
+                            <div class="font-extrabold mb-3 flex items-center gap-x-2"><i class="fa-solid fa-globe"></i> English Resources</div>
+                            <div class="text-sm space-y-[5px] text-zinc-300">
+                                <div><a href="https://quran.com" target="_blank" class="hover:text-emerald-300">Quran.com</a></div>
+                                <div><a href="https://sunnah.com" target="_blank" class="hover:text-emerald-300">Sunnah.com</a></div>
+                                <div><a href="https://tarteel.ai" target="_blank" class="hover:text-emerald-300">Tarteel</a></div>
+                                <div><a href="https://mawaqit.net" target="_blank" class="hover:text-emerald-300">Mawaqit</a></div>
+                                <div><a href="https://zoya.finance" target="_blank" class="hover:text-emerald-300">Zoya</a></div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass border border-zinc-700 rounded-3xl p-5">
+                            <div class="font-extrabold mb-3 flex items-center gap-x-2"><i class="fa-solid fa-language"></i> الموارد العربية</div>
+                            <div class="text-sm space-y-[5px] text-zinc-300">
+                                <div><a href="https://quran.com/ar" target="_blank" class="hover:text-emerald-300">قرآن.كوم</a></div>
+                                <div><a href="https://sunnah.com/ar" target="_blank" class="hover:text-emerald-300">سنة.كوم</a></div>
+                                <div><a href="https://mawaqit.net/ar" target="_blank" class="hover:text-emerald-300">مواقيت</a></div>
+                                <div><a href="https://tarteel.ai/ar" target="_blank" class="hover:text-emerald-300">ترتيل</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-xs text-center text-emerald-300">More tools available in the full Muslim Toolbox list</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function calcNextPrayerCountdown(timings) {
+            const now = new Date();
+            const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            const prayerList = [
+                {name: 'Fajr',    time: timings.Fajr},
+                {name: 'Dhuhr',   time: timings.Dhuhr},
+                {name: 'Asr',     time: timings.Asr},
+                {name: 'Maghrib', time: timings.Maghrib},
+                {name: 'Isha',    time: timings.Isha}
+            ];
+            let nextPrayer = null, nextSec = null;
+            for (let p of prayerList) {
+                const parts = p.time.split(':').map(Number);
+                const pSec = parts[0] * 3600 + parts[1] * 60;
+                if (pSec > nowSec) { nextPrayer = p.name; nextSec = pSec; break; }
+            }
+            if (!nextPrayer) {
+                nextPrayer = 'Fajr';
+                const parts = timings.Fajr.split(':').map(Number);
+                nextSec = parts[0] * 3600 + parts[1] * 60 + 86400;
+            }
+            const diff = nextSec - nowSec;
+            const h = Math.floor(diff / 3600);
+            const m = Math.floor((diff % 3600) / 60);
+            const s = diff % 60;
+            return { name: nextPrayer, h, m, s };
+        }
+
+        function startLivePrayerCountdown() {
+            function tick() {
+                if (!currentPrayerData) return;
+                const { name, h, m, s } = calcNextPrayerCountdown(currentPrayerData.timings);
+                const { currentPrayer } = getPrayerStatus(currentPrayerData.timings);
+                const countdownEl = document.getElementById('next-prayer-countdown');
+                const nameEl = document.getElementById('next-prayer-name');
+                const clockEl = document.getElementById('hero-clock');
+                if (countdownEl) countdownEl.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                if (nameEl) nameEl.textContent = name;
+                if (clockEl) clockEl.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+                // Also re-render prayer cards periodically so NOW/NEXT badge stays live
+                // (only if a minute boundary has passed — avoid full re-render every second)
+            }
+            tick();
+            setInterval(tick, 1000);
+            // Re-render prayer cards every minute to keep NOW/NEXT badges accurate
+            setInterval(() => {
+                if (currentPrayerData) renderPrayerTimes(currentPrayerData.timings, currentPrayerData.meta);
+            }, 60000);
+        }
+        
+        function initializeApp() {
+            initializeTailwind();
+            renderEvents('all');
+            document.getElementById('filter-all').classList.add('bg-emerald-400', 'text-zinc-900');
+            document.getElementById('current-year-display').innerHTML = `${currentHijriYear} AH`;
+            renderMiniCalendar(currentMonth, currentYear);
+            loadTodos();
+            renderTodos();
+            
+            // Navbar scroll effect
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 80) {
+                    navbar.classList.add('scrolled', 'glass');
+                } else {
+                    navbar.classList.remove('scrolled', 'glass');
+                }
+            });
+            
+            // Cursor trail
+            initCursorTrail();
+            
+            // Set current date on hero card
+            setCurrentHeroDate();
+            
+            // Start the clock immediately so it ticks from page load
+            (function clockTick() {
+                const clockEl = document.getElementById('hero-clock');
+                if (clockEl) clockEl.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            })();
+            setInterval(() => {
+                const clockEl = document.getElementById('hero-clock');
+                if (clockEl) clockEl.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            }, 1000);
+            
+            setTimeout(() => {
+                const container = document.getElementById('prayer-container');
+                if (container.children.length < 2) {
+                    renderPrayerTimes({Fajr:"05:42",Sunrise:"07:09",Dhuhr:"12:06",Asr:"15:13",Maghrib:"17:02",Isha:"18:28"}, {timezone:"Australia/Sydney"});
+                }
+                startLivePrayerCountdown();
+            }, 1200);
+
+              setTimeout(() => {
+                const healthTab = document.getElementById('tab-health');
+                if (healthTab) {
+                    healthTab.classList.add('bg-emerald-400', 'text-zinc-950');
+                }
+            }, 100);
+            
+            console.log('%c[Minhaj] Fully working version loaded.', 'color:#166534');
+        }
+        
+        // ─── Hijri Calendar Conversion ──────────────────────────────────────
+        // Converts a Gregorian date to the Hijri (Islamic) calendar.
+        // Algorithm: based on the Kuwaiti algorithm / Julian Day Number method.
+        function gregorianToHijri(gYear, gMonth, gDay) {
+            // Julian Day Number from Gregorian
+            const jd = Math.floor((1461 * (gYear + 4800 + Math.floor((gMonth - 14) / 12))) / 4)
+                     + Math.floor((367 * (gMonth - 2 - 12 * Math.floor((gMonth - 14) / 12))) / 12)
+                     - Math.floor((3 * Math.floor((gYear + 4900 + Math.floor((gMonth - 14) / 12)) / 100)) / 4)
+                     + gDay - 32075;
+            // Hijri from Julian Day
+            const l  = jd - 1948440 + 10632;
+            const n  = Math.floor((l - 1) / 10631);
+            const l2 = l - 10631 * n + 354;
+            const j  = Math.floor((10985 - l2) / 5316) * Math.floor((50 * l2) / 17719)
+                     + Math.floor(l2 / 5670) * Math.floor((43 * l2) / 15238);
+            const l3 = l2 - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50)
+                     - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
+            const hMonth = Math.floor((24 * l3) / 709);
+            const hDay   = l3 - Math.floor((709 * hMonth) / 24);
+            const hYear  = 30 * n + j - 30;
+            return { year: hYear, month: hMonth, day: hDay };
+        }
+
+        function hijriMonthName(m) {
+            return ['Muharram','Safar',"Rabi' al-Awwal","Rabi' al-Thani",
+                    "Jumada al-Awwal","Jumada al-Thani","Rajab","Sha'ban",
+                    'Ramadan','Shawwal',"Dhul Qa'dah",'Dhul Hijjah'][m - 1] || '';
+        }
+
+        // Returns the Gregorian date of 1 Muharram for a given Hijri year.
+        // Approximation: JDN of 1 Muharram 1 AH = 1948440 (Kuwaiti algorithm origin).
+        function hijriYearStartGregorian(hijriYear) {
+            // Julian Day of 1 Muharram hijriYear
+            const jd = Math.floor((11 * hijriYear + 3) / 30)
+                     + 354 * hijriYear + 30 * 1         // month=1, day=1 approximation
+                     - Math.floor((1 - 1) / 2)
+                     + 1948440 - 385;
+            // Convert JD to Gregorian
+            return jdToGregorian(jd);
+        }
+
+        function hijriDateToGregorian(hYear, hMonth, hDay) {
+            const jd = Math.floor((11 * hYear + 3) / 30)
+                     + 354 * hYear
+                     + 30 * hMonth
+                     - Math.floor((hMonth - 1) / 2)
+                     + hDay + 1948440 - 385;
+            return jdToGregorian(jd);
+        }
+
+        function jdToGregorian(jd) {
+            let l = jd + 68569;
+            const n = Math.floor((4 * l) / 146097);
+            l = l - Math.floor((146097 * n + 3) / 4);
+            const i = Math.floor((4000 * (l + 1)) / 1461001);
+            l = l - Math.floor((1461 * i) / 4) + 31;
+            const j = Math.floor((80 * l) / 2447);
+            const day = l - Math.floor((2447 * j) / 80);
+            l = Math.floor(j / 11);
+            const month = j + 2 - 12 * l;
+            const year = 100 * (n - 49) + i + l;
+            return { year, month, day };
+        }
+
+        function formatGregorianDate(g) {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `${g.day} ${months[g.month - 1]} ${g.year}`;
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
+        function setCurrentHeroDate() {
+            const now = new Date();
+            const gYear = now.getFullYear(), gMonth = now.getMonth() + 1, gDay = now.getDate();
+            const h = gregorianToHijri(gYear, gMonth, gDay);
+
+            const months3 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const heroDate = document.getElementById('hero-date');
+            const heroDay  = document.getElementById('hero-hijri-day');
+            const heroMon  = document.getElementById('hero-hijri-month');
+            const heroYr   = document.getElementById('hero-hijri-year');
+
+            if (heroDate) heroDate.textContent = `TODAY • ${gDay} ${months3[gMonth-1].toUpperCase()} ${gYear}`;
+            if (heroDay)  heroDay.textContent  = h.day;
+            if (heroMon)  heroMon.textContent  = hijriMonthName(h.month);
+            if (heroYr)   heroYr.textContent   = `${h.year} AH`;
+
+            // Update navbar year badge
+            const badge = document.querySelector('#navbar .font-semibold.text-xs');
+            if (badge) badge.textContent = `${h.year} AH • ${gYear}`;
+        }
+        
+        function initCursorTrail() {
+            document.addEventListener('mousemove', (e) => {
+                const dot = document.createElement('div');
+                dot.className = 'cursor-trail';
+                dot.style.left = `${e.clientX}px`;
+                dot.style.top = `${e.clientY}px`;
+                document.body.appendChild(dot);
+                
+                setTimeout(() => {
+                    if (dot.parentNode) {
+                        dot.style.transition = 'all 0.7s ease';
+                        dot.style.opacity = '0';
+                        dot.style.transform = 'scale(0.2)';
+                        setTimeout(() => dot.remove(), 700);
+                    }
+                }, 150);
+            });
+        }
+        
+        window.onload = initializeApp;
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
