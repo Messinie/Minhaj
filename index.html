@@ -9,6 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; }
+        .view { display: none; }
+        .view.active { display: block; animation: viewIn .28s ease; }
+        @keyframes viewIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        .nav-btn { padding: 6px 18px; border-radius: 3rem; font-weight: 600; white-space: nowrap; transition: all .2s; }
+        .nav-btn:hover { background: rgba(6,78,59,.3); color: #6ee7b7; }
+        .nav-btn.nav-pill-active { background: #34d399; color: #022c22; }
+        .fw-item{font-size:11.5px;line-height:1.35;padding:3px 6px;border-radius:8px;margin-bottom:2px;transition:all .15s}.fw-item:hover{background:rgba(255,255,255,.07)}.fw-dim{opacity:.12}.fw-hit{background:rgba(16,185,129,.2);box-shadow:0 0 0 1px rgba(16,185,129,.55)}.fw-flash{animation:fwf 1.2s}@keyframes fwf{0%,100%{background:transparent}30%{background:rgba(16,185,129,.2)}}
+        .lib-nav-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:12px;font-size:12px;font-weight:600;color:#a1a1aa;white-space:nowrap;text-align:left;transition:all .15s}.lib-nav-btn:hover{background:#18181b;color:#e4e4e7}.lib-nav-btn.on{background:rgba(16,185,129,.18);color:#6ee7b7}.lib-n{font-size:10px;background:#27272a;border-radius:99px;padding:0 6px;color:#a1a1aa}.lib-grp{font-size:10px;font-weight:800;letter-spacing:2px;color:#34d399;padding:10px 10px 2px;white-space:nowrap}
+        .fw-chip { padding: 5px 14px; border-radius: 3rem; font-size: 12px; font-weight: 700; border: 1px solid #3f3f46; background: #18181b; transition: all .15s; white-space: nowrap; }
+        .fw-chip:hover { border-color: #10b981; }
+        .fw-chip.on { background: #34d399; color: #022c22; border-color: #34d399; }
         
         /* Subtle radial ambient glow in hero */
         body::before {
@@ -88,15 +99,7 @@
                         <span class="font-bold text-3xl tracking-tighter">Minhaj</span>
                     </div>
                     
-                    <div class="hidden md:flex items-center justify-center flex-1">
-                        <div class="flex items-center gap-x-1 text-sm glass border border-zinc-700 px-2 py-1 rounded-[3rem]">
-                            <a href="#prayers" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Prayers</a>
-                            <a href="#calendar" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Calendar</a>
-                            <a href="#interactive-calendar" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Planner</a>
-                            <a href="#knowledge" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Knowledge</a>
-                            <a href="#life-framework" class="hover:bg-emerald-900/30 hover:text-emerald-300 transition-colors px-5 py-1.5 rounded-[3rem]">Framework</a>
-                        </div>
-                    </div>
+                    <div id="nav-desktop" class="hidden md:flex items-center justify-center flex-1"></div>
                     
                     <div class="flex items-center gap-x-3">
                         <div class="px-4 py-2 text-xs font-medium flex items-center gap-x-2 bg-zinc-900 border border-zinc-700 rounded-3xl whitespace-nowrap">
@@ -110,96 +113,22 @@
                 </div>
             </div>
         </div>
+        <div id="nav-mobile" class="md:hidden flex gap-1 overflow-x-auto px-4 pb-3 text-sm"></div>
     </nav>
     
- <!-- Hero Section -->
-<div class="max-w-screen-2xl mx-auto px-8 pt-16 pb-10">
-    <div class="text-center max-w-3xl mx-auto relative">
-        
-        <!-- Bismillah -->
-        <div class="text-emerald-300 text-3xl mb-8 font-serif tracking-wider">
-            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
-        </div>
-        
-        <!-- Eyebrow -->
-        <div class="text-emerald-300 text-sm tracking-[4px] font-bold mb-4">
-            YOUR ISLAMIC LIFE ROADMAP
-        </div>
-        
-        <!-- Main Heading -->
-        <h1 class="text-6xl lg:text-7xl font-bold tracking-tighter leading-tight mb-6">
-            A Life Built on <span class="text-emerald-400 italic">Purpose,</span><br>
-            Guided by <span class="text-emerald-400 italic">Faith</span>
-        </h1>
-        
-        <!-- Quranic Verse -->
-        <p class="max-w-2xl mx-auto text-xl text-zinc-300 italic mt-8">
-            "Verily, Allah will not change the condition of a people until they change what is within themselves."
-        </p>
-        <p class="text-emerald-300 text-sm mt-3">— Surah Ar-Ra'd, 13:11</p>
-        
-        <!-- Bigger Floating Countdown Card (with glow) -->
-        <div class="mt-10 mx-auto max-w-[360px]">
-            <div class="glass border border-emerald-900/30 neo-glow rounded-[3rem] p-7 floating homepage-glow hover:shadow-[0_0_50px_rgb(16,185,129,0.4)] transition-all duration-300">
-                <div class="flex justify-between items-start mb-5">
-                    <div class="text-left">
-                        <div id="hero-date" class="text-xs text-emerald-300 font-bold">TODAY • — — —</div>
-                        <div class="mt-1 flex items-baseline gap-x-2">
-                            <span id="hero-hijri-day" class="text-5xl font-extrabold tracking-tighter">—</span>
-                            <span id="hero-hijri-month" class="font-bold text-emerald-300 text-2xl">—</span>
-                        </div>
-                        <div id="hero-hijri-year" class="text-xs font-medium text-zinc-400">— AH</div>
-                    </div>
-                    <div class="text-right flex flex-col items-end gap-y-2">
-                        <div class="moon-glow inline-flex items-center justify-center w-11 h-11 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-[2rem]">
-                            <i class="fa-solid fa-moon text-zinc-900 text-3xl"></i>
-                        </div>
-                        <div id="hero-clock" class="font-extrabold text-lg tabular-nums text-zinc-200">—:—:—</div>
-                    </div>
-                </div>
-                
-                <div class="pt-5 border-t border-zinc-700">
-                    <div class="flex items-center justify-between">
-                        <div class="text-left">
-                            <div class="text-xs text-emerald-300 font-bold">NEXT PRAYER</div>
-                            <div id="next-prayer-name" class="font-extrabold text-3xl">—</div>
-                        </div>
-                        <div class="text-right">
-                            <div id="next-prayer-countdown" class="font-extrabold text-4xl tabular-nums text-emerald-300">—:—:—</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-</div>
+ <!-- Dashboard -->
+<section id="dash" data-view="home" class="view max-w-screen-2xl mx-auto px-6 pt-2 pb-5">
+  <div class="grid grid-cols-12 gap-3">
+    <div id="dash-today"   class="col-span-12 md:col-span-6 xl:col-span-4 glass border border-zinc-700 rounded-3xl p-5"></div>
+    <div id="dash-prayers" class="col-span-12 md:col-span-6 xl:col-span-5 glass border border-zinc-700 rounded-3xl p-5"></div>
+    <div id="dash-tasks"   class="col-span-12 md:col-span-6 xl:col-span-3 glass border border-zinc-700 rounded-3xl p-5"></div>
+    <div id="dash-year"    class="col-span-12 md:col-span-6 xl:col-span-7 glass border border-zinc-700 rounded-3xl p-5"></div>
+    <div id="dash-events"  class="col-span-12 xl:col-span-5 glass border border-zinc-700 rounded-3xl p-5"></div>
+  </div>
+</section>
 
-<!-- Buttons Section -->
-<div class="max-w-screen-2xl mx-auto px-8 pb-16">
-    <div class="flex flex-col md:flex-row items-center justify-center gap-4">
-        
-        <button onclick="document.getElementById('interactive-calendar').scrollIntoView({ behavior: 'smooth' })" 
-                class="px-7 transition-all py-[15px] flex items-center justify-center gap-x-2 bg-emerald-400 hover:bg-emerald-300 text-zinc-950 font-extrabold rounded-3xl text-sm px-8 shadow-xl shadow-emerald-900/30">
-            <span>Open Interactive Planner</span>
-            <i class="fa-solid fa-arrow-right ml-1"></i>
-        </button>
-        
-        <button onclick="document.getElementById('prayers').scrollIntoView({ behavior: 'smooth' })" 
-                class="px-6 py-[15px] transition-all flex items-center justify-center gap-x-2 font-semibold border border-zinc-700 hover:bg-zinc-900 text-sm px-5 rounded-3xl">
-            <i class="fa-solid fa-clock mr-2"></i> 
-            <span>Prayer Times</span>
-        </button>
-        
-    </div>
-</div>
-            
-            
-        </div>
-    </div>
-    
-    <!-- Prayer Times -->
-    <div id="prayers" class="max-w-screen-2xl mx-auto px-8 pt-8 pb-6">
+<!-- Prayer Times -->
+    <div id="prayers" data-view="prayers" class="view max-w-screen-2xl mx-auto px-8 pt-8 pb-6">
         <div class="flex items-end justify-between mb-6 px-1">
             <div>
                 <span class="text-xs font-extrabold tracking-wider px-3 py-1 bg-emerald-900/20 text-emerald-300 rounded-[2rem]">LIVE</span>
@@ -247,7 +176,7 @@
     </div>
     
     <!-- Islamic Holidays & Observances -->
-    <div id="calendar" class="max-w-screen-2xl mx-auto px-8 py-10">
+    <div id="calendar" data-view="calendar" class="view max-w-screen-2xl mx-auto px-8 py-10">
         <div class="flex items-center justify-between mb-6 px-1">
             <div>
                 <h2 class="section-header text-4xl tracking-tighter">Islamic Holidays &amp; Observances</h2>
@@ -275,7 +204,7 @@
     </div>
     
     <!-- Interactive Calendar + Planner + To-Do -->
-    <div id="interactive-calendar" class="max-w-screen-2xl mx-auto px-8 py-8">
+    <div id="interactive-calendar" data-view="planner" class="view max-w-screen-2xl mx-auto px-8 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-5">
                 <div class="glass border border-zinc-700 rounded-3xl p-5">
@@ -309,23 +238,14 @@
                             <div class="px-4 py-[10px] bg-zinc-900 border border-emerald-900/40 text-emerald-300 font-semibold rounded-2xl flex items-center gap-x-3">
                                 <i class="fa-solid fa-sun text-xl"></i>
                                 <div>
-                                    <div class="font-extrabold">Fasting • 3 days to Ashura</div>
-                                    <div class="text-xs">Prepare for recommended fast on 25 June</div>
+                                    <div class="font-extrabold"><span id="focus-title">—</span></div>
+                                    <div class="text-xs"><span id="focus-sub">—</span></div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="text-xs text-emerald-300 font-bold px-1 mb-1">UPCOMING</div>
-                        <div class="space-y-2 text-sm">
-                            <div class="flex items-center justify-between px-3 py-2 bg-zinc-900 rounded-2xl">
-                                <div>Day of Ashura (1448)</div>
-                                <div class="text-xs font-bold text-emerald-300">25 June 2026</div>
-                            </div>
-                            <div class="flex items-center justify-between px-3 py-2 bg-zinc-900 rounded-2xl">
-                                <div>Islamic New Year (1449)</div>
-                                <div class="text-xs font-bold text-emerald-300">16 June 2027</div>
-                            </div>
-                        </div>
+                        <div id="planner-upcoming" class="space-y-2 text-sm"></div>
                     </div>
                 </div>
             </div>
@@ -359,7 +279,7 @@
     </div>
     
     <!-- Resources Section -->
-    <div class="max-w-screen-2xl mx-auto px-8 pb-6">
+    <div id="resources" data-view="resources" class="view max-w-screen-2xl mx-auto px-8 pt-8 pb-6">
         <div class="mb-6 px-1">
             <h2 class="section-header text-4xl tracking-tighter">Resources &amp; Tools</h2>
             <p class="text-emerald-300 font-semibold text-sm">Curated Islamic apps, websites, and learning platforms</p>
@@ -416,80 +336,92 @@
     </div>
     
     <!-- Islamic Life Framework -->
-    <div id="life-framework" class="max-w-screen-2xl mx-auto px-8 py-12">
-        <div class="text-center mb-10">
-            <div class="text-emerald-300 text-sm tracking-[3px] font-bold mb-2">YOUR ISLAMIC LIFE ROADMAP</div>
-            <h2 class="section-header text-4xl tracking-tighter">My Islamic Life Framework</h2>
-            <p class="text-emerald-300 mt-2">A structured approach to Health, Knowledge, and Religion</p>
-        </div>
-        
-        <div class="flex justify-center mb-8">
-            <div class="glass border border-zinc-700 px-2 py-1 rounded-[3rem] flex">
-                <button onclick="showLifeFramework('health')" class="px-6 py-2 rounded-[3rem] font-bold text-sm transition-all" id="tab-health">💪 Health</button>
-                <button onclick="showLifeFramework('knowledge')" class="px-6 py-2 rounded-[3rem] font-bold text-sm transition-all" id="tab-knowledge">📖 Knowledge</button>
-                <button onclick="showLifeFramework('religion')" class="px-6 py-2 rounded-[3rem] font-bold text-sm transition-all" id="tab-religion">🕌 Religion</button>
-                <button onclick="showLifeFramework('all')" class="px-6 py-2 rounded-[3rem] font-bold text-sm transition-all" id="tab-all">✦ All</button>
+    <div id="life-framework" data-view="framework" class="view max-w-screen-2xl mx-auto px-6 pt-4 pb-6">
+        <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+            <div>
+                <div class="text-emerald-300 text-[11px] tracking-[3px] font-bold">YOUR ISLAMIC LIFE ROADMAP</div>
+                <h2 class="section-header text-3xl tracking-tighter">My Islamic Life Framework</h2>
+                <p class="text-emerald-300 text-sm">A structured approach to Health, Knowledge, and Religion</p>
             </div>
+            <div id="fw-pillars" class="flex gap-2 flex-wrap"></div>
         </div>
-        
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div id="fw-modes" class="flex gap-2 flex-wrap"></div>
+            <div id="fw-horizons" class="flex gap-1.5 overflow-x-auto"></div>
+        </div>
         <div id="life-framework-content"></div>
     </div>
-    
+
     <!-- Knowledge Section -->
-    <div id="knowledge" class="max-w-screen-2xl mx-auto px-8 pb-10 pt-4">
-        <div class="mb-6 px-1">
-            <h2 class="section-header text-4xl tracking-tighter">Sunnah Knowledge Base</h2>
+    <div id="knowledge" data-view="knowledge" class="view max-w-screen-2xl mx-auto px-6 pt-4 pb-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div><h2 class="section-header text-3xl tracking-tighter">Library</h2><p class="text-emerald-300 text-sm">Sunnah knowledge, trusted apps and learning links in one place</p></div>
+            <input id="kb-search" oninput="kbFilter()" placeholder="Search knowledge &amp; links…" class="bg-zinc-900 border border-zinc-700 rounded-3xl px-4 py-2 text-sm w-full sm:w-80 focus:outline-none focus:border-emerald-600">
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(0)">
-                <div class="flex items-center gap-x-3">
-                    <i class="fa-solid fa-mountain text-emerald-400 text-3xl"></i>
-                    <div><div class="font-extrabold">Fasting Arafah</div><div class="text-xs text-emerald-300">9 Dhul Hijjah</div></div>
-                </div>
-                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Fasting on the Day of Arafah expiates the sins of the previous and coming year.</div>
-            </div>
-            
-            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(1)">
-                <div class="flex items-center gap-x-3">
-                    <i class="fa-solid fa-cloud-moon text-emerald-400 text-3xl"></i>
-                    <div><div class="font-extrabold">Laylatul Qadr</div><div class="text-xs text-emerald-300">27 Ramadan</div></div>
-                </div>
-                <div class="mt-4 text-xs leading-relaxed text-zinc-300">The Night of Power. Better than a thousand months.</div>
-            </div>
-            
-            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(2)">
-                <div class="flex items-center gap-x-3">
-                    <i class="fa-solid fa-star text-emerald-400 text-3xl"></i>
-                    <div><div class="font-extrabold">Day of Ashura</div><div class="text-xs text-emerald-300">10 Muharram</div></div>
-                </div>
-                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Fasting Ashura expiates sins of the past year.</div>
-            </div>
-            
-            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(3)">
-                <div class="flex items-center gap-x-3">
-                    <i class="fa-solid fa-book text-emerald-400 text-3xl"></i>
-                    <div><div class="font-extrabold">Surah Al-Kahf</div><div class="text-xs text-emerald-300">Every Friday</div></div>
-                </div>
-                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Whoever reads Surah Al-Kahf on Friday will have a light between this Friday and the next.</div>
-            </div>
-            
-            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(4)">
-                <div class="flex items-center gap-x-3">
-                    <i class="fa-solid fa-bed text-emerald-400 text-3xl"></i>
-                    <div><div class="font-extrabold">Dua Before Sleep</div><div class="text-xs text-emerald-300">Daily Sunnah</div></div>
-                </div>
-                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Recite Ayatul Kursi + the three Quls (Ikhlas, Falaq, Nas) before sleeping for protection.</div>
-            </div>
-            
-            <div class="modern-card glass border border-zinc-700 hover:border-emerald-700/60 rounded-3xl p-5 cursor-pointer" onclick="showKnowledgeModal(5)">
-                <div class="flex items-center gap-x-3">
-                    <i class="fa-solid fa-sun text-emerald-400 text-3xl"></i>
-                    <div><div class="font-extrabold">Morning &amp; Evening Adhkar</div><div class="text-xs text-emerald-300">Daily Protection</div></div>
-                </div>
-                <div class="mt-4 text-xs leading-relaxed text-zinc-300">Recite the morning and evening supplications for protection, blessings and barakah in your day.</div>
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+            <div id="lib-nav" class="lg:col-span-3 glass border border-zinc-700 rounded-3xl p-2 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-hidden lg:overflow-y-auto" style="max-height:calc(100vh - 190px)"></div>
+            <div id="lib-main" class="lg:col-span-9 glass border border-zinc-700 rounded-3xl p-4 overflow-y-auto" style="max-height:calc(100vh - 190px)"></div>
         </div>
+        <div id="toolbox-body" class="hidden">
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Curated Lists &amp; Megathreads</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://github.com/choubari/Awesome-Muslims" target="_blank" class="hover:text-emerald-300">Awesome-Muslims</a> 🌟</div>
+                                <div>• <a href="https://github.com/AhmedKamal/awesome-Islam" target="_blank" class="hover:text-emerald-300">Awesome-Islam</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/MuslimLounge/" target="_blank" class="hover:text-emerald-300">r/MuslimLounge</a></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Communities</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://www.reddit.com/r/Quran/" target="_blank" class="hover:text-emerald-300">r/Quran</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/Muslim/" target="_blank" class="hover:text-emerald-300">r/Muslim</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/muslims/" target="_blank" class="hover:text-emerald-300">r/muslims</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/MuslimCorner/" target="_blank" class="hover:text-emerald-300">r/MuslimCorner</a> 🌟</div>
+                                <div>• <a href="https://www.reddit.com/r/TraditionalMuslims/" target="_blank" class="hover:text-emerald-300">r/TraditionalMuslims</a></div>
+                                <div>• <a href="https://www.reddit.com/r/IslamicFinance/" target="_blank" class="hover:text-emerald-300">r/IslamicFinance</a></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Mobile Apps</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://haramblur.com/" target="_blank" class="hover:text-emerald-300">Haram Blur</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.karim.khatma" target="_blank" class="hover:text-emerald-300">Khatma</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.islam360" target="_blank" class="hover:text-emerald-300">Islam 360</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.pakdata.QuranMajeed" target="_blank" class="hover:text-emerald-300">Quran Majeed</a> 🌟</div>
+                                <div>• <a href="https://tarteel.ai/" target="_blank" class="hover:text-emerald-300">Tarteel</a> 🌟</div>
+                                <div>• <a href="https://www.pillarsapp.com/" target="_blank" class="hover:text-emerald-300">Pillars</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.islam.hisn" target="_blank" class="hover:text-emerald-300">Hisnul Muslim</a></div>
+                                <div>• <a href="https://mawaqit.net/en/" target="_blank" class="hover:text-emerald-300">Mawaqit</a> 🌟</div>
+                                <div>• <a href="https://play.google.com/store/apps/details?id=com.quran.labs.androidquran" target="_blank" class="hover:text-emerald-300">Quran by Quran.com</a> 🌟</div>
+                                <div>• <a href="https://zoya.finance/" target="_blank" class="hover:text-emerald-300">Zoya</a> 🌟</div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Desktop &amp; Web Tools</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://quran.com/" target="_blank" class="hover:text-emerald-300">Quran.com</a> 🌟</div>
+                                <div>• <a href="https://sunnah.com/" target="_blank" class="hover:text-emerald-300">Sunnah.com</a></div>
+                                <div>• <a href="https://hifzpath.pages.dev/" target="_blank" class="hover:text-emerald-300">HifzPath</a> 🌟</div>
+                                <div>• <a href="https://seekersguidance.org/" target="_blank" class="hover:text-emerald-300">SeekersGuidance</a></div>
+                                <div>• <a href="https://yaqeeninstitute.org/" target="_blank" class="hover:text-emerald-300">Yaqeen Institute</a></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="font-bold text-emerald-300 mb-2">Learning Platforms</div>
+                            <div class="space-y-1">
+                                <div>• <a href="https://zad-academy.com/en" target="_blank" class="hover:text-emerald-300">Zad Academy</a></div>
+                                <div>• <a href="https://simplyislam.academy/" target="_blank" class="hover:text-emerald-300">SimplyIslam Academy</a></div>
+                                <div>• <a href="https://www.almaghrib.org/" target="_blank" class="hover:text-emerald-300">AlMaghrib Institute</a></div>
+                                <div>• <a href="https://bayyinah.tv/" target="_blank" class="hover:text-emerald-300">Bayyinah TV</a></div>
+                            </div>
+                        </div>
+                    </div>
     </div>
     
     <footer class="border-t border-zinc-800 py-6 px-8 max-w-screen-2xl mx-auto">
@@ -503,8 +435,38 @@
     </footer>
     
     <script>
+        // ═════════ TIME ENGINE (timezone + DST aware) ═════════
+        let currentPrayerData = null;
+        let TZ = (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'UTC';
+        const _zf = {};
+        function zparts(t, tz) {
+            tz = tz || TZ;
+            const f = _zf[tz] || (_zf[tz] = new Intl.DateTimeFormat('en-GB', {timeZone: tz, hourCycle: 'h23', year:'numeric', month:'numeric', day:'numeric', hour:'numeric', minute:'numeric', second:'numeric', weekday:'short'}));
+            const o = {};
+            f.formatToParts(new Date(t)).forEach(p => { o[p.type] = p.value; });
+            return { y:+o.year, m:+o.month, d:+o.day, h:+o.hour % 24, mi:+o.minute, s:+o.second, dow:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(o.weekday) };
+        }
+        function zonedNow() { const n = Date.now(), p = zparts(n); p.t = n; p.sec = p.h*3600 + p.mi*60 + p.s; return p; }
+        function tzOffsetMs(t, tz) { const p = zparts(t, tz); return Date.UTC(p.y, p.m-1, p.d, p.h, p.mi, p.s) - Math.floor(t/1000)*1000; }
+        // Wall-clock time in a timezone -> true epoch ms (handles DST transitions)
+        function zonedToEpoch(y, m, d, h, mi, tz) {
+            tz = tz || TZ;
+            const g = Date.UTC(y, m-1, d, h, mi);
+            let e = g - tzOffsetMs(g, tz);
+            return g - tzOffsetMs(e, tz);
+        }
+        function tzLabel() {
+            try { return new Intl.DateTimeFormat('en-AU', {timeZone: TZ, timeZoneName:'short'}).formatToParts(new Date()).find(p => p.type === 'timeZoneName').value; } catch { return TZ; }
+        }
+        function dayNumber(y, m, d) { return Math.round(Date.UTC(y, m-1, d) / 86400000); }
+        const pad2 = n => String(n).padStart(2, '0');
+        const MON3 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const _HF = (() => { try { return new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {day:'numeric', month:'numeric', year:'numeric', timeZone:'UTC'}); } catch { return null; } })();
+        const _HOK = (() => { if (!_HF) return false; try { const o = {}; _HF.formatToParts(new Date(Date.UTC(2026,0,1,12))).forEach(p => o[p.type] = p.value); return +o.year > 1400 && +o.year < 1500; } catch { return false; } })();
+        // ═══════════════════════════════════════════════════
+
         function initializeTailwind() {
-            tailwind.config = { theme: { extend: {} } };
+            if (window.tailwind) tailwind.config = { theme: { extend: {} } };
         }
 
         const DATA = {
@@ -984,68 +946,38 @@
         let currentPillar = 'health';
         let currentMode = 'goals';
 
-        function showLifeFramework(pillar) {
-            // Update active tab
-            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.remove('bg-emerald-400', 'text-zinc-950'));
-            document.getElementById('tab-' + pillar).classList.add('bg-emerald-400', 'text-zinc-950');
-            
-            const container = document.getElementById('life-framework-content');
-            container.innerHTML = '';
-            
-            if (pillar === 'all') {
-                renderAllView(container);
-            } else {
-                renderPillarView(container, pillar);
-            }
+        const FW_MODES = [['goals','Goals','#34d399'],['antigoals','Avoid','#fb7185'],['fail','Pitfalls','#fbbf24'],['mva','Minimum','#38bdf8']];
+        const FW_HZ = [['10yr','10 Years'],['5yr','5 Years'],['1yr','1 Year'],['6mo','6 Months'],['1mo','1 Month'],['1wk','1 Week'],['daily','Daily']];
+        const fwOff = new Set();
+        const fwEsc = x => String(x || '').replace(/"/g, '&quot;');
+        function showLifeFramework() { renderFramework(); }
+        function fwToggle(m) { fwOff.has(m) ? fwOff.delete(m) : fwOff.add(m); renderFramework(); }
+        function fwJump(id) { const el = document.getElementById(id), box = document.getElementById('fw-scroll'); if (!el || !box) return; box.scrollTo({ top: el.offsetTop - 40, behavior: 'smooth' }); el.classList.add('fw-flash'); setTimeout(() => el.classList.remove('fw-flash'), 1200); }
+        function fwSearch(q) {
+            q = (q || '').trim().toLowerCase(); let n = 0, first = null;
+            document.querySelectorAll('#fw-scroll .fw-item').forEach(el => { const hit = !q || el.dataset.text.includes(q); el.classList.toggle('fw-dim', !hit); el.classList.toggle('fw-hit', !!q && hit); if (q && hit) { n++; first = first || el; } });
+            const c = document.getElementById('fw-count'); if (c) c.textContent = q ? `${n} match${n === 1 ? '' : 'es'}` : '';
+            if (first) first.scrollIntoView({ block: 'center', behavior: 'smooth' });
         }
-        
-        function renderPillarView(container, pillar) {
-            // Render the framework for a specific pillar
-            const pillarData = DATA[pillar];
-            
-            const html = `
-                <div class="max-w-4xl mx-auto">
-                    <div class="text-center mb-8">
-                        <div class="text-6xl mb-4">${pillarData.intro.icon}</div>
-                        <h3 class="text-3xl font-bold mb-2">${pillar.charAt(0).toUpperCase() + pillar.slice(1)}</h3>
-                        <p class="text-emerald-300 italic">"${pillarData.intro.verse}"</p>
-                        <p class="text-xs text-emerald-300 mt-1">${pillarData.intro.ref}</p>
-                    </div>
-                    
-                    <!-- Goals Section -->
-                    <div class="mb-8">
-                        <h4 class="text-xl font-bold mb-4 text-emerald-300">Goals</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            ${Object.keys(pillarData.goals).map(time => `
-                                <div class="glass border border-zinc-700 rounded-3xl p-5">
-                                    <div class="font-bold mb-3">${time}</div>
-                                    ${pillarData.goals[time].map(item => `
-                                        <div class="mb-3">
-                                            <div class="font-semibold">${item.t}</div>
-                                            <div class="text-sm text-zinc-300">${item.d}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-        }
-        
-        function renderAllView(container) {
-            container.innerHTML = `
-                <div class="text-center">
-                    <p class="text-emerald-300">All pillars view coming soon...</p>
-                </div>
-            `;
+        function renderFramework() {
+            if (!document.getElementById('fw-q')) document.getElementById('fw-pillars').innerHTML = `<input id="fw-q" oninput="fwSearch(this.value)" placeholder="Search every goal, pitfall, habit…" class="bg-zinc-900 border border-zinc-700 rounded-3xl px-4 py-2 text-sm w-64 focus:outline-none focus:border-emerald-600"><span id="fw-count" class="text-xs text-emerald-300 self-center"></span>`;
+            document.getElementById('fw-modes').innerHTML = FW_MODES.map(([k, l, c]) => `<button onclick="fwToggle('${k}')" class="fw-chip ${fwOff.has(k) ? '' : 'on'}" style="${fwOff.has(k) ? '' : `background:${c};border-color:${c}`}">${l}</button>`).join('');
+            document.getElementById('fw-horizons').innerHTML = '<span class="text-[11px] text-zinc-500 self-center mr-1">Jump to</span>' + FW_HZ.map(([k, l]) => `<button onclick="fwJump('fw-row-${k}')" class="fw-chip">${l}</button>`).join('');
+            const cols = ['health', 'knowledge', 'religion'];
+            const cell = (p, hz) => FW_MODES.filter(m => !fwOff.has(m[0])).map(([mk, ml, mc]) => {
+                const items = ((DATA[p][mk] || {})[hz] || []).map(x => { const t = x.t || x.a, d = x.d || x.w, r = x.r || ''; return `<div class="fw-item" title="${fwEsc(r)}" data-text="${fwEsc((t + ' ' + d + ' ' + r + ' ' + ml + ' ' + p).toLowerCase())}"><b>${t}</b> <span class="text-zinc-400">${d || ''}</span></div>`; }).join('');
+                return items ? `<div class="mb-2"><div class="text-[10px] font-extrabold tracking-wider mb-0.5" style="color:${mc}">${ml.toUpperCase()}</div>${items}</div>` : '';
+            }).join('');
+            const grid = 'display:grid;grid-template-columns:78px repeat(3,minmax(0,1fr));gap:10px';
+            document.getElementById('life-framework-content').innerHTML = `<div id="fw-scroll" class="relative overflow-auto rounded-3xl border border-zinc-700 bg-zinc-950/60" style="height:calc(100vh - 215px)"><div style="min-width:900px">
+                <div class="sticky top-0 z-10 bg-zinc-950 border-b border-zinc-800 px-3 py-2" style="${grid}"><div></div>${cols.map(p => `<div class="font-extrabold capitalize">${DATA[p].intro.icon} ${p}</div>`).join('')}</div>
+                ${FW_HZ.map(([hz, hl]) => `<div id="fw-row-${hz}" class="px-3 py-3 border-b border-zinc-800/70" style="${grid}"><div class="font-extrabold text-emerald-300 text-sm">${hl}</div>${cols.map(p => `<div>${cell(p, hz)}</div>`).join('')}</div>`).join('')}</div></div>`;
+            fwSearch((document.getElementById('fw-q') || {}).value);
         }
         
         let currentHijriYear = (() => {
-            const now = new Date();
-            return gregorianToHijri(now.getFullYear(), now.getMonth() + 1, now.getDate()).year;
+            const now = zonedNow();
+            return gregorianToHijri(now.y, now.m, now.d).year;
         })();
         
         function generateEventsForYear(hijriYear) {
@@ -1187,8 +1119,8 @@
                 {name:'Asr',       time:timings.Asr,     icon:'fa-cloud-sun'},
                 {name:'Maghrib',   time:timings.Maghrib, icon:'fa-cloud-moon'},
                 {name:'Isha',      time:timings.Isha,    icon:'fa-moon'},
-                {name:'Midnight',  time:"00:00",          icon:'fa-clock'},
-                {name:'Last Third',time:"03:00",          icon:'fa-moon'}
+                {name:'Midnight',  time:nightTimes(timings).mid,   icon:'fa-clock'},
+                {name:'Last Third',time:nightTimes(timings).third, icon:'fa-moon'}
             ];
             
             const { nextPrayer, currentPrayer } = getPrayerStatus(timings);
@@ -1225,78 +1157,68 @@
             
             const loc = document.createElement('div');
             loc.className = `col-span-full mt-1 flex items-center justify-center px-4`;
-            loc.innerHTML = `<div class="px-4 py-2 text-xs flex items-center gap-x-2 text-emerald-300"><i class="fa-solid fa-map-marker-alt"></i> <span class="font-extrabold">${meta.timezone || 'Your Location'}</span></div>`;
+            loc.innerHTML = `<div class="px-4 py-2 text-xs flex items-center gap-x-2 text-emerald-300"><i class="fa-solid fa-map-marker-alt"></i> <span class="font-extrabold">${meta.place || ''} · ${meta.timezone || TZ} (${tzLabel()})${meta.approx ? ' · approximate' : ''}</span></div>`;
             container.appendChild(loc);
         }
         
         // Returns both the current active prayer and the next upcoming prayer.
         // "Current" = the prayer whose window is now open (i.e. the most recent prayer that has passed).
+        function prayerEpochs(timings, dayOffset = 0) {
+            const n = zonedNow();
+            const base = new Date(Date.UTC(n.y, n.m-1, n.d + dayOffset));
+            const y = base.getUTCFullYear(), m = base.getUTCMonth()+1, d = base.getUTCDate();
+            const at = t => { const [h, mi] = String(t).slice(0,5).split(':').map(Number); return zonedToEpoch(y, m, d, h, mi, TZ); };
+            return ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'].map(k => ({ name: k, t: at(timings[k]) }));
+        }
+        function nightTimes(timings) {
+            const [mh, mm] = timings.Maghrib.slice(0,5).split(':').map(Number), [fh, fm] = timings.Fajr.slice(0,5).split(':').map(Number);
+            const mag = mh*60 + mm, faj = fm + fh*60 + 1440, len = faj - mag;
+            const fmt = x => { x = Math.round(x) % 1440; return pad2(Math.floor(x/60)) + ':' + pad2(x%60); };
+            return { mid: fmt(mag + len/2), third: fmt(mag + len*2/3) };
+        }
+        // Current + next salah using true timestamps in the prayer location's timezone
         function getPrayerStatus(timings) {
-            const now = new Date();
-            const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-            
-            // Ordered salah list (Sunrise is not a salah so skip for current/next logic)
-            const salah = [
-                {name:'Fajr',    time: timings.Fajr},
-                {name:'Dhuhr',   time: timings.Dhuhr},
-                {name:'Asr',     time: timings.Asr},
-                {name:'Maghrib', time: timings.Maghrib},
-                {name:'Isha',    time: timings.Isha}
-            ];
-            
-            const toSec = t => { const [h,m] = t.split(':').map(Number); return h*3600+m*60; };
-            
-            let currentPrayer = salah[salah.length - 1].name; // default: Isha (overnight)
-            let nextPrayer    = salah[0].name;                // default: Fajr (next day)
-            
-            for (let i = 0; i < salah.length; i++) {
-                const pSec = toSec(salah[i].time);
-                if (nowSec < pSec) {
-                    // Haven't reached this prayer yet — it's next
-                    nextPrayer    = salah[i].name;
-                    currentPrayer = i === 0 ? salah[salah.length - 1].name : salah[i - 1].name;
-                    break;
-                }
-                // If we exhaust the loop, we're past Isha — current=Isha, next=Fajr (tomorrow)
-                if (i === salah.length - 1) {
-                    currentPrayer = salah[i].name;
-                    nextPrayer    = salah[0].name;
-                }
+            const now = Date.now();
+            const list = prayerEpochs(timings).filter(p => p.name !== 'Sunrise');
+            let cur = 'Isha', next = 'Fajr';
+            for (let i = 0; i < list.length; i++) {
+                if (now < list[i].t) { next = list[i].name; cur = i === 0 ? 'Isha' : list[i-1].name; break; }
+                if (i === list.length - 1) { cur = 'Isha'; next = 'Fajr'; }
             }
-            return { currentPrayer, nextPrayer };
+            return { currentPrayer: cur, nextPrayer: next };
         }
         
+        let prayerCoords = { lat: -35.2809, lon: 149.1300, label: 'Canberra' };  // default until location is shared
+        const FALLBACK_TIMES = {Fajr:"05:42",Sunrise:"07:09",Dhuhr:"12:06",Asr:"15:13",Maghrib:"17:02",Isha:"18:28"};
+        async function fetchPrayerTimes() {
+            const n = zonedNow();
+            const method = document.getElementById('calc-method').value || '2';
+            try {
+                // Aladhan expects DD-MM-YYYY
+                const res = await fetch(`https://api.aladhan.com/v1/timings/${pad2(n.d)}-${pad2(n.m)}-${n.y}?latitude=${prayerCoords.lat}&longitude=${prayerCoords.lon}&method=${method}`);
+                const data = await res.json();
+                if (data.code !== 200) throw new Error();
+                const t = {}; Object.keys(data.data.timings).forEach(k => t[k] = String(data.data.timings[k]).slice(0,5));
+                const tz = data.data.meta.timezone;
+                if (tz) { TZ = tz; }
+                renderPrayerTimes(t, { timezone: TZ, place: prayerCoords.label });
+            } catch {
+                renderPrayerTimes(FALLBACK_TIMES, { timezone: TZ, place: 'offline estimate', approx: true });
+            }
+            setCurrentHeroDate(); renderMiniCalendar(currentMonth, currentYear); renderDashboard();
+        }
         async function getPrayerTimes() {
             const btnText = document.getElementById('location-btn-text');
             btnText.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Locating...`;
-            
+            if (!navigator.geolocation) { btnText.textContent = 'Use My Location'; return fetchPrayerTimes(); }
             navigator.geolocation.getCurrentPosition(async (pos) => {
-                const { latitude, longitude } = pos.coords;
-                const method = document.getElementById('calc-method').value || '2';
-                
-                try {
-                    const today = new Date();
-                    const dateStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-                    const res = await fetch(`https://api.aladhan.com/v1/timings/${dateStr}?latitude=${latitude}&longitude=${longitude}&method=${method}`);
-                    const data = await res.json();
-                    if (data.code === 200) {
-                        renderPrayerTimes(data.data.timings, data.data.meta);
-                    } else throw new Error();
-                } catch {
-                    renderPrayerTimes({Fajr:"05:42",Sunrise:"07:09",Dhuhr:"12:06",Asr:"15:13",Maghrib:"17:02",Isha:"18:28"}, {timezone:"Australia/Sydney"});
-                }
-                btnText.innerHTML = `Refresh Location`;
-            }, () => {
-                btnText.innerHTML = `Use My Location`;
-                renderPrayerTimes({Fajr:"05:42",Sunrise:"07:09",Dhuhr:"12:06",Asr:"15:13",Maghrib:"17:02",Isha:"18:28"}, {timezone:"Australia/Sydney"});
-            });
+                prayerCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude, label: 'Your location' };
+                await fetchPrayerTimes();
+                btnText.textContent = 'Refresh Location';
+            }, () => { btnText.textContent = 'Use My Location'; });
         }
         
-        function refreshPrayerTimes() {
-            if (currentPrayerData) {
-                renderPrayerTimes(currentPrayerData.timings, currentPrayerData.meta);
-            }
-        }
+        function refreshPrayerTimes() { fetchPrayerTimes(); }
         
         function showPrayerPanel() {
             if (!currentPrayerData) {
@@ -1357,21 +1279,76 @@
             }, 1000);
         }
         
-        const knowledgeData = [
-            {title: "Fasting of Arafah", content: "Fasting on the 9th of Dhul Hijjah (Day of Arafah) is one of the most virtuous fasts. The Prophet ﷺ said: 'Fasting on the Day of Arafah expiates the sins of the previous year and the coming year.'"},
-            {title: "Laylatul Qadr", content: "The Night of Power is better than 1000 months. It occurs on one of the odd nights of the last ten nights of Ramadan. The Prophet ﷺ encouraged us to seek it especially on the 27th night."},
-            {title: "Fasting of Ashura", content: "Fasting on the 10th of Muharram (Ashura) is highly recommended. Prophet Muhammad ﷺ said: 'Fasting the day of Ashura, I hope Allah will expiate thereby for the year that came before it.'"},
-            {title: "Surah Al-Kahf on Friday", content: "The Prophet ﷺ said: 'Whoever reads Surah Al-Kahf on Friday, it will be a light for him between this Friday and the next.' It is highly recommended to recite it every Friday."},
-            {title: "Dua Before Sleeping", content: "The Prophet ﷺ would recite Ayatul Kursi and the last three Surahs (Al-Ikhlas, Al-Falaq, An-Nas) before sleeping. This provides protection throughout the night."},
-            {title: "Morning & Evening Adhkar", content: "The Prophet ﷺ taught us to recite specific supplications in the morning and evening for protection, forgiveness, and blessings."}
+        const KB = [
+            ['Fasting','fa-mountain','Fasting of Arafah','Muslim','Fasting the 9th of Dhul Hijjah expiates the sins of the previous and coming year (for those not performing Hajj).'],
+            ['Fasting','fa-star','Fasting of Ashura','Muslim','Fasting the 10th of Muharram expiates the previous year. Add the 9th (or 11th) to differ from the practice of others.'],
+            ['Fasting','fa-calendar-check','Mondays & Thursdays','Tirmidhi','The Prophet ﷺ fasted these days, saying deeds are presented to Allah then and he loved to be fasting when his were presented.'],
+            ['Fasting','fa-moon','The White Days','Bukhari & Muslim','Fasting three days each month (traditionally the 13th, 14th and 15th) is like fasting the whole year.'],
+            ['Fasting','fa-calendar-day','Six Days of Shawwal','Muslim','Fasting Ramadan then six days of Shawwal is like fasting the entire year.'],
+            ['Fasting','fa-utensils','Eating Suhoor','Bukhari & Muslim','"Take suhoor, for in suhoor there is blessing." Even a date or a sip of water counts.'],
+            ['Prayer','fa-mosque','The 12 Rawatib','Muslim','Whoever prays 12 voluntary rakat daily (2 before Fajr, 4+2 around Dhuhr, 2 after Maghrib, 2 after Isha) gets a house in Paradise.'],
+            ['Prayer','fa-sun','Duha Prayer','Muslim','Two rakat in the forenoon suffice as charity owed for every joint of the body.'],
+            ['Prayer','fa-cloud-moon','Tahajjud & the Last Third','Bukhari & Muslim','Allah descends to the lowest heaven in the last third of the night, answering those who call and forgiving those who seek it.'],
+            ['Prayer','fa-hands','Witr','Abu Dawud','"Allah is Witr (One) and loves Witr." Pray it after Isha and before Fajr, ideally as the last prayer of the night.'],
+            ['Prayer','fa-bell','Dua Between Adhan & Iqamah','Abu Dawud & Tirmidhi','Supplication made between the call to prayer and the iqamah is not turned away.'],
+            ['Dhikr','fa-sun','Morning & Evening Adhkar','Various','The Prophet ﷺ taught fixed supplications at dawn and dusk for protection, forgiveness and blessing.'],
+            ['Dhikr','fa-book-quran','Ayatul Kursi After Salah','Nasa\'i','Reciting Ayatul Kursi after each obligatory prayer is a means of entering Paradise.'],
+            ['Dhikr','fa-bed','Before Sleeping','Bukhari','Recite Ayatul Kursi and the three Quls, blowing into your palms and wiping over the body, for protection through the night.'],
+            ['Dhikr','fa-heart','Istighfar','Bukhari & Muslim','The Prophet ﷺ sought forgiveness more than seventy (and in another narration a hundred) times a day.'],
+            ['Days & Nights','fa-cloud-moon','Laylatul Qadr','Quran 97','Better than a thousand months. Seek it in the odd nights of the last ten of Ramadan, especially the 27th.'],
+            ['Days & Nights','fa-book-open','Surah Al-Kahf on Friday','Hakim','Whoever recites it on Friday has a light between this Friday and the next.'],
+            ['Days & Nights','fa-hourglass-half','Friday Hour of Acceptance','Bukhari & Muslim','There is an hour on Friday in which any good supplication is granted. Increase dua, especially near Asr.'],
+            ['Days & Nights','fa-kaaba','First 10 Days of Dhul Hijjah','Bukhari','No days are more beloved to Allah for righteous deeds. Increase dhikr, fasting and charity.'],
+            ['Character','fa-face-smile','Smiling is Charity','Tirmidhi','"Your smile in the face of your brother is charity." Small kindness counts as sadaqah.'],
+            ['Character','fa-fire-flame-curved','Controlling Anger','Bukhari & Muslim','The strong person is not the one who overpowers others, but the one who controls themselves in anger.'],
+            ['Character','fa-people-roof','Keeping Family Ties','Bukhari & Muslim','Joining the ties of kinship brings expansion in provision and a blessed lifespan.'],
+            ['Character','fa-scale-balanced','Good Character','Tirmidhi','Nothing will weigh heavier on the Scale on the Day of Judgement than good character.'],
+            ['Quran','fa-book-quran','Reward per Letter','Tirmidhi','Each letter of the Quran earns a good deed, and each good deed is multiplied by ten.'],
+            ['Quran','fa-circle-check','Surah Al-Ikhlas','Bukhari','Reciting it equals a third of the Quran in reward and it expresses pure tawhid.'],
+            ['Etiquette','fa-hand','Eating with Bismillah','Bukhari & Muslim','Say Bismillah, eat with the right hand and from what is nearest to you.'],
+            ['Etiquette','fa-handshake','Spreading Salam','Muslim','Spread the greeting of peace among yourselves and you will love one another.']
         ];
+        const knowledgeData = KB.map(k => ({ title: k[2], content: k[4], cat: k[0], ref: k[3] }));
+        let kbCat = 'All';
+        let LIB = null, libSel = 'all';
+        const libHost = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
+        function buildLib() {
+            const links = [], seen = new Set();
+            const add = (sec, a, star) => { if (!a.href || seen.has(a.href)) return; seen.add(a.href); links.push({ sec, name: a.textContent.trim(), href: a.href, star }); };
+            document.querySelectorAll('#resources .glass').forEach(c => { let t = ((c.querySelector('.font-extrabold') || {}).textContent || '').trim(); if (/[\u0600-\u06FF]/.test(t)) t = 'Arabic Resources'; c.querySelectorAll('a').forEach(a => add(t, a, false)); });
+            document.querySelectorAll('#toolbox-body > div').forEach(sec => { const t = sec.firstElementChild.textContent.trim(); sec.querySelectorAll('.space-y-1 > div').forEach(r => { const a = r.querySelector('a'); if (a) add(t, a, r.textContent.includes('🌟')); }); });
+            LIB = { links, kcats: [...new Set(KB.map(k => k[0]))], lsecs: [...new Set(links.map(l => l.sec))] };
+        }
+        function renderKnowledge() { if (!LIB) buildLib(); kbFilter(); }
+        function libGo(sel) { libSel = sel; kbFilter(); document.getElementById('lib-main').scrollTop = 0; }
+        function kbFilter() {
+            if (!LIB) buildLib();
+            const q = (document.getElementById('kb-search').value || '').trim().toLowerCase();
+            const kOk = KB.map((k, i) => ({ k, i })).filter(({ k }) => !q || k.join(' ').toLowerCase().includes(q));
+            const lOk = LIB.links.filter(l => !q || (l.name + ' ' + l.sec + ' ' + libHost(l.href)).toLowerCase().includes(q));
+            const btn = (id, label, n) => `<button onclick="libGo('${id}')" class="lib-nav-btn ${libSel === id ? 'on' : ''}"><span class="truncate">${label}</span><span class="lib-n">${n}</span></button>`;
+            document.getElementById('lib-nav').innerHTML = btn('all', 'Everything', kOk.length + lOk.length) + btn('star', '⭐ Recommended', lOk.filter(l => l.star).length)
+                + '<div class="lib-grp">SUNNAH KNOWLEDGE</div>' + LIB.kcats.map((c, i) => btn('k:' + i, c, kOk.filter(x => x.k[0] === c).length)).join('')
+                + '<div class="lib-grp">TOOLS &amp; LINKS</div>' + LIB.lsecs.map((sn, i) => btn('l:' + i, sn, lOk.filter(l => l.sec === sn).length)).join('');
+            const kCard = ({ k, i }) => `<div onclick="showKnowledgeModal(${i})" class="cursor-pointer rounded-2xl border border-zinc-800 bg-zinc-900/70 hover:border-emerald-600/60 hover:bg-zinc-900 p-3 transition-colors"><div class="flex items-center gap-2"><i class="fa-solid ${k[1]} text-emerald-400 w-5 text-center"></i><div class="font-bold text-sm leading-tight">${k[2]}</div></div><div class="mt-1.5 text-[11px] text-zinc-400 line-clamp-2">${k[4]}</div><div class="mt-1 text-[10px] text-zinc-600">${k[3]}</div></div>`;
+            const lRow = l => `<a href="${l.href}" target="_blank" rel="noopener" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-900/70 border border-zinc-800 hover:border-emerald-600/60 hover:bg-zinc-900 transition-colors"><span class="w-7 h-7 shrink-0 rounded-lg bg-emerald-900/40 text-emerald-300 flex items-center justify-center text-xs font-bold">${(l.name[0] || '•').toUpperCase()}</span><div class="min-w-0 flex-1"><div class="text-sm font-semibold truncate">${l.name}${l.star ? ' 🌟' : ''}</div><div class="text-[10px] text-zinc-500 truncate">${libHost(l.href)}</div></div><i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-zinc-600"></i></a>`;
+            const cols = 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
+            let out = '';
+            const add = (title, items, fn) => { if (items.length) out += `<div class="flex items-center gap-2 mt-4 first:mt-0 mb-2"><div class="text-[11px] font-extrabold tracking-[2px] text-emerald-300">${title.toUpperCase()}</div><div class="text-[10px] text-zinc-500">${items.length}</div></div><div class="grid ${cols} gap-2">${items.map(fn).join('')}</div>`; };
+            if (libSel === 'all') { add('Sunnah knowledge', kOk, kCard); LIB.lsecs.forEach(sn => add(sn, lOk.filter(l => l.sec === sn), lRow)); }
+            else if (libSel === 'star') LIB.lsecs.forEach(sn => add(sn, lOk.filter(l => l.sec === sn && l.star), lRow));
+            else if (libSel[0] === 'k') { const c = LIB.kcats[+libSel.slice(2)]; add(c, kOk.filter(x => x.k[0] === c), kCard); }
+            else { const sn = LIB.lsecs[+libSel.slice(2)]; add(sn, lOk.filter(l => l.sec === sn), lRow); }
+            if (!out) out = `<div class="text-center text-sm text-zinc-500 py-10">Nothing matches here.${q && libSel !== 'all' ? ' <button onclick="libGo(\'all\')" class="text-emerald-300 underline">Search everything</button>' : ''}</div>`;
+            document.getElementById('lib-main').innerHTML = out;
+        }
+        
         
         function showKnowledgeModal(i) {
-            const modal = document.getElementById('knowledge-modal');
-            document.getElementById('modal-header').innerHTML = knowledgeData[i].title;
-            document.getElementById('modal-content').innerHTML = `<p class="leading-relaxed">${knowledgeData[i].content}</p>`;
-            modal.style.display = 'flex';
-            modal.classList.remove('hidden');
+            const modal = document.getElementById('knowledge-modal'), k = knowledgeData[i];
+            document.getElementById('modal-header').innerHTML = k.title;
+            document.getElementById('modal-content').innerHTML = `<p class="leading-relaxed">${k.content}</p><div class="mt-3 text-xs text-emerald-300">${k.cat} · Source: ${k.ref}</div>`;
+            modal.style.display = 'flex'; modal.classList.remove('hidden');
         }
         
         function hideKnowledgeModal() {
@@ -1380,8 +1357,8 @@
             modal.classList.add('hidden');
         }
         
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
+        let currentMonth = zonedNow().m - 1;
+        let currentYear = zonedNow().y;
         
         function renderMiniCalendar(month, year) {
             const container = document.getElementById('mini-calendar');
@@ -1389,16 +1366,16 @@
             
             // Calculate Hijri info for the 1st of this Gregorian month
             const h1 = gregorianToHijri(year, month + 1, 1);
-            const hLast = gregorianToHijri(year, month + 1, new Date(year, month + 1, 0).getDate());
+            const hLast = gregorianToHijri(year, month + 1, new Date(Date.UTC(year, month + 1, 0)).getUTCDate());
             const hijriRange = h1.year === hLast.year && h1.month === hLast.month
                 ? `${hijriMonthName(h1.month)} ${h1.year} AH`
                 : `${hijriMonthName(h1.month)}–${hijriMonthName(hLast.month)} ${hLast.year} AH`;
             header.innerHTML = `${new Date(year, month).toLocaleString('default', {month:'long'})} ${year} <span class="text-zinc-500">•</span> ${hijriRange}`;
             container.innerHTML = '';
             
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDay = new Date(year, month, 1).getDay();
-            const today = new Date();
+            const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+            const firstDay = new Date(Date.UTC(year, month, 1)).getUTCDay();
+            const today = zonedNow(); today.getFullYear = () => today.y; today.getMonth = () => today.m - 1; today.getDate = () => today.d;
             
             const weekdays = ['S','M','T','W','T','F','S'];
             weekdays.forEach(d => {
@@ -1421,7 +1398,9 @@
                 
                 // Show the Hijri day number as a small sub-label
                 const hDate = gregorianToHijri(year, month + 1, day);
-                dayEl.innerHTML = `<div class="font-medium leading-tight">${day}</div><div class="text-[8px] text-zinc-500 leading-none">${hDate.day}</div>`;
+                const evt = EVENT_DAYS.find(e => e.m === hDate.month && e.d === hDate.day);
+                if (evt) dayEl.title = evt.title;
+                dayEl.innerHTML = `<div class="font-medium leading-tight">${day}</div><div class="text-[8px] text-zinc-500 leading-none">${hDate.day}</div>${evt ? `<div class="mx-auto mt-px w-1 h-1 rounded-full ${evt.cat === 'fasting' ? 'bg-emerald-400' : 'bg-amber-400'}"></div>` : ''}`;
                 dayEl.onclick = () => showDayModal(day, month, year);
                 container.appendChild(dayEl);
             }
@@ -1431,7 +1410,7 @@
             const modal = document.createElement('div');
             modal.className = `fixed inset-0 bg-black/70 flex items-center justify-center z-[210]`;
             
-            const dateFormatted = new Date(year, month, day).toLocaleDateString('en-US', {month:'long', day:'numeric'});
+            const dateFormatted = new Date(Date.UTC(year, month, day, 12)).toLocaleDateString('en-US', {month:'long', day:'numeric', weekday:'long', timeZone:'UTC'});
             const hThis = gregorianToHijri(year, month + 1, day);
             
             // Match events by converting the clicked day to all Hijri dates it might span
@@ -1490,9 +1469,9 @@
         }
         
         function goToToday() {
-            const now = new Date();
-            currentMonth = now.getMonth();
-            currentYear = now.getFullYear();
+            const now = zonedNow();
+            currentMonth = now.m - 1;
+            currentYear = now.y;
             renderMiniCalendar(currentMonth, currentYear);
         }
         
@@ -1539,9 +1518,9 @@
         let todos = [];
         
         function getDailyAutomatedTasks() {
-            const today = new Date();
-            const isFriday = today.getDay() === 5;
-            const isFastingDay = today.getDate() === 25 && today.getMonth() === 5;
+            const zn = zonedNow(), hj = gregorianToHijri(zn.y, zn.m, zn.d);
+            const isFriday = zn.dow === 5;
+            const isFastingDay = (hj.month === 1 && (hj.day === 9 || hj.day === 10)) || (hj.month === 12 && hj.day === 9) || ((zn.dow === 1 || zn.dow === 4) && hj.month !== 9) || ([13,14,15].includes(hj.day) && !(hj.month === 12) && hj.month !== 9);
             
             let tasks = [
                 {id: 1001, text: "Dua upon waking up", time: "5:00 AM", completed: false, automated: true},
@@ -1574,16 +1553,24 @@
                 tasks.push({id: 1022, text: "Break fast with dates + water + dua", time: "Maghrib", completed: false, automated: true});
             }
             
-            return tasks.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+            const toMin = t => { const m = /(\d+):(\d+) (AM|PM)/.exec(t || ''); if (m) return ((+m[1] % 12) + (m[3] === 'PM' ? 12 : 0)) * 60 + +m[2]; return ({'Before Fajr':290,'After Fajr':370,"After Jumu'ah":800,'Maghrib':1040,'Anytime':1500})[t] ?? 1500; };
+            return tasks.sort((a, b) => toMin(a.time) - toMin(b.time));
         }
         
         function loadTodos() {
-            const saved = localStorage.getItem('sunnahTodos');
-            todos = saved ? JSON.parse(saved) : getDailyAutomatedTasks();
+            const zn = zonedNow(), stamp = `${zn.y}-${zn.m}-${zn.d}`;
+            let saved = null; try { saved = JSON.parse(localStorage.getItem('sunnahTodos')); } catch {}
+            if (saved && localStorage.getItem('sunnahTodosDate') === stamp) todos = saved;
+            else { // new day: refresh automated tasks, keep unfinished custom ones
+                const custom = (saved || []).filter(t => !t.automated && !t.completed);
+                todos = [...custom, ...getDailyAutomatedTasks()];
+                localStorage.setItem('sunnahTodosDate', stamp); saveTodos();
+            }
         }
         
         function saveTodos() {
             localStorage.setItem('sunnahTodos', JSON.stringify(todos));
+            if (typeof renderDashboard === 'function') renderDashboard();
         }
         
         function renderTodos(limit = 6) {
@@ -1723,9 +1710,9 @@
             const modal = document.createElement('div');
             modal.className = `fixed inset-0 bg-black z-[300] flex items-center justify-center`;
             
-            const now = new Date();
-            const currentTime = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const currentDate = now.toLocaleDateString('en-US', {month:'long', day:'numeric'});
+            const now = new Date(), zn = zonedNow(), hj = gregorianToHijri(zn.y, zn.m, zn.d);
+            const currentTime = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: TZ});
+            const currentDate = new Date(Date.UTC(zn.y, zn.m-1, zn.d, 12)).toLocaleDateString('en-US', {month:'long', day:'numeric', timeZone:'UTC'});
             
             modal.innerHTML = `
                 <div class="text-center max-w-2xl px-8">
@@ -1736,7 +1723,7 @@
                         </div>
                         <div class="text-right">
                             <div class="text-emerald-300 text-sm">TODAY</div>
-                            <div class="font-bold text-2xl text-white">${currentDate} • 22 Jumada II 1447</div>
+                            <div class="font-bold text-2xl text-white">${currentDate} • ${hj.day} ${hijriMonthName(hj.month)} ${hj.year}</div>
                         </div>
                     </div>
                     
@@ -1786,7 +1773,7 @@
                 const timeEl = modal.querySelector('#fs-current-time');
                 if (nameEl) nameEl.textContent = name;
                 if (countdownEl) countdownEl.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                if (timeEl) timeEl.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                if (timeEl) timeEl.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZone: TZ});
             }, 1000);
         }
         
@@ -1920,57 +1907,32 @@
             document.body.appendChild(modal);
         }
         
+        function nextPrayerInfo(timings) {
+            const now = Date.now();
+            const today = prayerEpochs(timings).filter(p => p.name !== 'Sunrise');
+            const yest = prayerEpochs(timings, -1).filter(p => p.name !== 'Sunrise');
+            const tom = prayerEpochs(timings, 1).filter(p => p.name !== 'Sunrise');
+            const seq = [...yest.slice(-1), ...today, tom[0]];
+            for (let i = 1; i < seq.length; i++) if (seq[i].t > now) return { name: seq[i].name, t: seq[i].t, prevT: seq[i-1].t, prev: seq[i-1].name };
+            return { name: 'Fajr', t: tom[0].t, prevT: today[today.length-1].t, prev: 'Isha' };
+        }
         function calcNextPrayerCountdown(timings) {
-            const now = new Date();
-            const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-            const prayerList = [
-                {name: 'Fajr',    time: timings.Fajr},
-                {name: 'Dhuhr',   time: timings.Dhuhr},
-                {name: 'Asr',     time: timings.Asr},
-                {name: 'Maghrib', time: timings.Maghrib},
-                {name: 'Isha',    time: timings.Isha}
-            ];
-            let nextPrayer = null, nextSec = null;
-            for (let p of prayerList) {
-                const parts = p.time.split(':').map(Number);
-                const pSec = parts[0] * 3600 + parts[1] * 60;
-                if (pSec > nowSec) { nextPrayer = p.name; nextSec = pSec; break; }
-            }
-            if (!nextPrayer) {
-                nextPrayer = 'Fajr';
-                const parts = timings.Fajr.split(':').map(Number);
-                nextSec = parts[0] * 3600 + parts[1] * 60 + 86400;
-            }
-            const diff = nextSec - nowSec;
-            const h = Math.floor(diff / 3600);
-            const m = Math.floor((diff % 3600) / 60);
-            const s = diff % 60;
-            return { name: nextPrayer, h, m, s };
+            const info = nextPrayerInfo(timings);
+            const diff = Math.max(0, Math.floor((info.t - Date.now()) / 1000));
+            return { name: info.name, h: Math.floor(diff/3600), m: Math.floor((diff%3600)/60), s: diff%60 };
         }
 
         function startLivePrayerCountdown() {
-            function tick() {
-                if (!currentPrayerData) return;
-                const { name, h, m, s } = calcNextPrayerCountdown(currentPrayerData.timings);
-                const { currentPrayer } = getPrayerStatus(currentPrayerData.timings);
-                const countdownEl = document.getElementById('next-prayer-countdown');
-                const nameEl = document.getElementById('next-prayer-name');
-                const clockEl = document.getElementById('hero-clock');
-                if (countdownEl) countdownEl.textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                if (nameEl) nameEl.textContent = name;
-                if (clockEl) clockEl.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-                // Also re-render prayer cards periodically so NOW/NEXT badge stays live
-                // (only if a minute boundary has passed — avoid full re-render every second)
-            }
-            tick();
-            setInterval(tick, 1000);
-            // Re-render prayer cards every minute to keep NOW/NEXT badges accurate
-            setInterval(() => {
-                if (currentPrayerData) renderPrayerTimes(currentPrayerData.timings, currentPrayerData.meta);
-            }, 60000);
+            dashTick();
+            setInterval(dashTick, 1000);
+            setInterval(() => { if (currentPrayerData) renderPrayerTimes(currentPrayerData.timings, currentPrayerData.meta); renderDashboard(); }, 60000);
         }
         
         function initializeApp() {
+            try { _initApp(); } catch (e) { console.error('init error', e); }
+            if (!document.getElementById('nav-desktop').children.length) initViews();  // never leave the page blank
+        }
+        function _initApp() {
             initializeTailwind();
             renderEvents('all');
             document.getElementById('filter-all').classList.add('bg-emerald-400', 'text-zinc-900');
@@ -1995,29 +1957,25 @@
             // Set current date on hero card
             setCurrentHeroDate();
             
-            // Start the clock immediately so it ticks from page load
+            // (clock handled by dashTick)
+            if (false)
             (function clockTick() {
                 const clockEl = document.getElementById('hero-clock');
                 if (clockEl) clockEl.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
             })();
-            setInterval(() => {
-                const clockEl = document.getElementById('hero-clock');
-                if (clockEl) clockEl.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-            }, 1000);
+            
             
             setTimeout(() => {
-                const container = document.getElementById('prayer-container');
-                if (container.children.length < 2) {
-                    renderPrayerTimes({Fajr:"05:42",Sunrise:"07:09",Dhuhr:"12:06",Asr:"15:13",Maghrib:"17:02",Isha:"18:28"}, {timezone:"Australia/Sydney"});
-                }
                 startLivePrayerCountdown();
-            }, 1200);
+            }, 300);
+            renderDashboard();
+            fetchPrayerTimes();
+            renderFramework();
+            renderKnowledge();
+            initViews();
 
               setTimeout(() => {
-                const healthTab = document.getElementById('tab-health');
-                if (healthTab) {
-                    healthTab.classList.add('bg-emerald-400', 'text-zinc-950');
-                }
+                
             }, 100);
             
             console.log('%c[Minhaj] Fully working version loaded.', 'color:#166534');
@@ -2026,7 +1984,7 @@
         // ─── Hijri Calendar Conversion ──────────────────────────────────────
         // Converts a Gregorian date to the Hijri (Islamic) calendar.
         // Algorithm: based on the Kuwaiti algorithm / Julian Day Number method.
-        function gregorianToHijri(gYear, gMonth, gDay) {
+        function gregorianToHijriArith(gYear, gMonth, gDay) {
             // Julian Day Number from Gregorian
             const jd = Math.floor((1461 * (gYear + 4800 + Math.floor((gMonth - 14) / 12))) / 4)
                      + Math.floor((367 * (gMonth - 2 - 12 * Math.floor((gMonth - 14) / 12))) / 12)
@@ -2044,6 +2002,14 @@
             const hDay   = l3 - Math.floor((709 * hMonth) / 24);
             const hYear  = 30 * n + j - 30;
             return { year: hYear, month: hMonth, day: hDay };
+        }
+
+        // Umm al-Qura civil date for a Gregorian calendar date (calendar-date based, so no timezone drift)
+        function gregorianToHijri(gYear, gMonth, gDay) {
+            if (!_HOK) return gregorianToHijriArith(gYear, gMonth, gDay);
+            const o = {};
+            _HF.formatToParts(new Date(Date.UTC(gYear, gMonth-1, gDay, 12))).forEach(p => o[p.type] = p.value);
+            return { year: +o.year, month: +o.month, day: +o.day };
         }
 
         function hijriMonthName(m) {
@@ -2065,12 +2031,19 @@
         }
 
         function hijriDateToGregorian(hYear, hMonth, hDay) {
-            const jd = Math.floor((11 * hYear + 3) / 30)
-                     + 354 * hYear
-                     + 30 * hMonth
-                     - Math.floor((hMonth - 1) / 2)
-                     + hDay + 1948440 - 385;
-            return jdToGregorian(jd);
+            // estimate, then scan +/-5 days for the exact Umm al-Qura match
+            const est = Math.round(-492148 + (hYear-1)*354.36667 + (hMonth-1)*29.530588 + (hDay-1));
+            let best = null, bestDiff = 1e9;
+            const key = hYear*10000 + hMonth*100 + hDay;
+            for (let k = est - 5; k <= est + 5; k++) {
+                const g = jdToGregorian(k + 2440588);
+                const h = gregorianToHijri(g.year, g.month, g.day);
+                const hk = h.year*10000 + h.month*100 + h.day;
+                if (hk === key) return g;
+                const diff = Math.abs(hk - key);
+                if (diff < bestDiff) { bestDiff = diff; best = g; }
+            }
+            return best;
         }
 
         function jdToGregorian(jd) {
@@ -2094,24 +2067,9 @@
         // ─────────────────────────────────────────────────────────────────────
 
         function setCurrentHeroDate() {
-            const now = new Date();
-            const gYear = now.getFullYear(), gMonth = now.getMonth() + 1, gDay = now.getDate();
-            const h = gregorianToHijri(gYear, gMonth, gDay);
-
-            const months3 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            const heroDate = document.getElementById('hero-date');
-            const heroDay  = document.getElementById('hero-hijri-day');
-            const heroMon  = document.getElementById('hero-hijri-month');
-            const heroYr   = document.getElementById('hero-hijri-year');
-
-            if (heroDate) heroDate.textContent = `TODAY • ${gDay} ${months3[gMonth-1].toUpperCase()} ${gYear}`;
-            if (heroDay)  heroDay.textContent  = h.day;
-            if (heroMon)  heroMon.textContent  = hijriMonthName(h.month);
-            if (heroYr)   heroYr.textContent   = `${h.year} AH`;
-
-            // Update navbar year badge
+            const n = zonedNow(), h = gregorianToHijri(n.y, n.m, n.d);
             const badge = document.querySelector('#navbar .font-semibold.text-xs');
-            if (badge) badge.textContent = `${h.year} AH • ${gYear}`;
+            if (badge) badge.textContent = `${h.year} AH • ${n.y}`;
         }
         
         function initCursorTrail() {
@@ -2133,6 +2091,230 @@
             });
         }
         
+
+        // ═════════ DASHBOARD ═════════
+        const EVENT_DAYS = [
+            {id:1,  m:1,  d:1,  cat:'celebration', title:'Islamic New Year', short:'New Year'},
+            {id:2,  m:1,  d:10, cat:'fasting',     title:'Day of Ashura', short:'Ashura'},
+            {id:3,  m:3,  d:12, cat:'celebration', title:'Mawlid an-Nabi', short:'Mawlid'},
+            {id:4,  m:7,  d:27, cat:'celebration', title:"Isra and Mi'raj", short:"Isra"},
+            {id:5,  m:8,  d:15, cat:'celebration', title:"Mid-Sha'ban", short:"Sha'ban"},
+            {id:6,  m:9,  d:1,  cat:'fasting',     title:'Start of Ramadan', short:'Ramadan'},
+            {id:7,  m:9,  d:27, cat:'fasting',     title:'Laylatul Qadr', short:'Qadr'},
+            {id:8,  m:10, d:1,  cat:'celebration', title:'Eid al-Fitr', short:'Eid'},
+            {id:9,  m:10, d:2,  cat:'fasting',     title:'6 Days of Shawwal', short:'Shawwal'},
+            {id:10, m:12, d:9,  cat:'fasting',     title:'Day of Arafah', short:'Arafah'},
+            {id:11, m:12, d:10, cat:'celebration', title:'Eid al-Adha', short:'Adha'}
+        ];
+        const HM_SHORT = ['Muh','Saf','R-I','R-II','J-I','J-II','Raj','Sha','Ram','Shw','DhQ','DhH'];
+        function hijriMonthLength(y, m) {
+            const a = hijriDateToGregorian(y, m, 1), ny = m === 12 ? y+1 : y, nm = m === 12 ? 1 : m+1, b = hijriDateToGregorian(ny, nm, 1);
+            return dayNumber(b.year, b.month, b.day) - dayNumber(a.year, a.month, a.day);
+        }
+        function moonPhase(t) {
+            const jd = t/86400000 + 2440587.5, ph = (((jd - 2451550.1) / 29.530588853) % 1 + 1) % 1;
+            return { ph, illum: (1 - Math.cos(2*Math.PI*ph)) / 2 };
+        }
+        function moonSVG(ph, r = 30) {
+            const k = Math.cos(2*Math.PI*ph), rx = Math.abs(k)*r, waxing = ph < 0.5, c = r + 2;
+            const sweep2 = waxing ? (k > 0 ? 0 : 1) : (k > 0 ? 1 : 0), sweep1 = waxing ? 1 : 0;
+            const lit = `M ${c} 2 A ${r} ${r} 0 0 ${sweep1} ${c} ${c+r} A ${rx} ${r} 0 0 ${sweep2} ${c} 2 Z`;
+            return `<svg width="${c*2}" height="${c*2}" viewBox="0 0 ${c*2} ${c*2}"><circle cx="${c}" cy="${c}" r="${r}" fill="#18181b" stroke="#3f3f46"/><path d="${lit}" fill="#fcd34d"/></svg>`;
+        }
+        function upcomingEvents(n, limit) {
+            const hj = gregorianToHijri(n.y, n.m, n.d), today = dayNumber(n.y, n.m, n.d), out = [];
+            for (let y = hj.year; y <= hj.year + 1; y++) EVENT_DAYS.forEach(e => {
+                const g = hijriDateToGregorian(y, e.m, e.d), diff = dayNumber(g.year, g.month, g.day) - today;
+                if (diff >= 0) out.push({...e, hy: y, g, diff});
+            });
+            return out.sort((a, b) => a.diff - b.diff).slice(0, limit);
+        }
+        const card = (title, right, body) => `<div class="flex items-center justify-between mb-3"><div class="text-[11px] font-extrabold tracking-[2px] text-emerald-300">${title}</div><div class="text-[11px] text-zinc-400">${right || ''}</div></div>${body}`;
+
+        function renderDashboard() {
+            const n = zonedNow(), hj = gregorianToHijri(n.y, n.m, n.d), pd = currentPrayerData;
+            const wd = new Date(Date.UTC(n.y, n.m-1, n.d, 12)).toLocaleDateString('en-US', {weekday:'long', timeZone:'UTC'});
+            const mlen = hijriMonthLength(hj.year, hj.month), mp = moonPhase(n.t);
+            const afterMaghrib = pd && prayerEpochs(pd.timings)[4].t <= n.t;
+            const tom = gregorianToHijri(...(d => [d.getUTCFullYear(), d.getUTCMonth()+1, d.getUTCDate()])(new Date(Date.UTC(n.y, n.m-1, n.d+1))));
+            // --- Today ---
+            document.getElementById('dash-today').innerHTML = card('TODAY', `${TZ.split('/').pop().replace('_',' ')} · ${tzLabel()}`, `
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <div class="text-xs text-zinc-400">${wd}, ${n.d} ${MON3[n.m-1]} ${n.y}</div>
+                  <div class="flex items-baseline gap-2 mt-1"><span class="text-6xl font-extrabold tracking-tighter leading-none">${hj.day}</span><span class="text-2xl font-bold text-emerald-300">${hijriMonthName(hj.month)}</span></div>
+                  <div class="text-xs text-zinc-400 mt-1">${hj.year} AH${afterMaghrib ? ` · <span class="text-amber-300">after Maghrib → ${tom.day} ${hijriMonthName(tom.month)}</span>` : ''}</div>
+                </div>
+                <div class="text-center moon-glow rounded-full">${moonSVG(mp.ph)}</div>
+              </div>
+              <div id="hero-clock" class="mt-3 font-extrabold text-3xl tabular-nums">--:--:--</div>
+              <div class="mt-3 grid grid-cols-2 gap-3 text-[11px]">
+                <div><div class="flex justify-between text-zinc-400 mb-1"><span>Hijri month</span><span>${hj.day}/${mlen}</span></div><div class="h-2 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-emerald-400" style="width:${hj.day/mlen*100}%"></div></div></div>
+                <div><div class="flex justify-between text-zinc-400 mb-1"><span>Moon</span><span>${Math.round(mp.illum*100)}% lit</span></div><div class="h-2 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-amber-300" style="width:${mp.illum*100}%"></div></div></div>
+              </div>
+              <div class="mt-3 text-[10px] text-zinc-500">Umm al-Qura calendar · actual start of month may differ ±1 day with moon sighting</div>`);
+
+            // --- Prayers ---
+            let body = '<div class="text-sm text-zinc-400">Loading prayer times…</div>', right = '';
+            if (pd) {
+                const t = pd.timings, info = nextPrayerInfo(t), ep = prayerEpochs(t), nt = nightTimes(t);
+                const sec = x => { const [h, m] = x.slice(0,5).split(':').map(Number); return h*3600 + m*60; };
+                const X = s_ => (s_ / 86400 * 600).toFixed(1);
+                const seg = [[0,'Fajr','#27272a'],['Fajr','Sunrise','#38bdf8'],['Sunrise','Dhuhr','#fbbf24'],['Dhuhr','Asr','#34d399'],['Asr','Maghrib','#f59e0b'],['Maghrib','Isha','#a78bfa'],['Isha',86400,'#27272a']];
+                const val = v => typeof v === 'number' ? v : sec(t[v]);
+                const rects = seg.map(([a, b, c]) => `<rect x="${X(val(a))}" y="22" width="${Math.max(0, X(val(b)) - X(val(a)))}" height="16" fill="${c}" opacity=".85"/>`).join('');
+                const labels = ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'].map((k, i) => `<line x1="${X(sec(t[k]))}" x2="${X(sec(t[k]))}" y1="18" y2="42" stroke="#71717a" stroke-width=".7"/><text x="${X(sec(t[k]))}" y="${i%2 ? 62 : 54}" font-size="9" text-anchor="middle" fill="#a1a1aa">${k.slice(0,3)} ${t[k].slice(0,5)}</text>`).join('');
+                const circ = 2*Math.PI*30;
+                right = `${t.Fajr.slice(0,5)}–${t.Isha.slice(0,5)}`;
+                body = `
+                <div class="flex items-center gap-4">
+                  <svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="none" stroke="#27272a" stroke-width="7"/><circle id="dash-ring" cx="40" cy="40" r="30" fill="none" stroke="#34d399" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 ${circ}" transform="rotate(-90 40 40)"/><text x="40" y="44" text-anchor="middle" font-size="11" fill="#d4d4d8" id="dash-ring-pct">0%</text></svg>
+                  <div class="flex-1"><div class="text-[11px] text-zinc-400">NEXT PRAYER</div><div id="next-prayer-name" class="text-3xl font-extrabold leading-none">${info.name}</div><div id="next-prayer-countdown" class="text-3xl font-extrabold tabular-nums text-emerald-300 leading-tight">--:--:--</div></div>
+                  <div class="text-right text-[11px] text-zinc-400 hidden sm:block"><div>Midnight <b class="text-zinc-200">${nt.mid}</b></div><div>Last third <b class="text-zinc-200">${nt.third}</b></div><div>Daylight <b class="text-zinc-200">${(() => { const d = sec(t.Maghrib) - sec(t.Sunrise); return Math.floor(d/3600) + 'h ' + Math.floor(d%3600/60) + 'm'; })()}</b></div></div>
+                </div>
+                <svg viewBox="0 0 600 70" class="w-full mt-3"><rect x="0" y="22" width="600" height="16" rx="8" fill="#18181b"/>${rects}${labels}<g id="dash-now"><line id="dash-now-line" x1="0" x2="0" y1="14" y2="46" stroke="#fff" stroke-width="2"/><circle id="dash-now-dot" cx="0" cy="14" r="3.5" fill="#fff"/></g></svg>`;
+            }
+            document.getElementById('dash-prayers').innerHTML = card('PRAYER TIMELINE', right, body);
+
+            // --- Tasks ---
+            const done = todos.filter(x => x.completed).length, total = todos.length || 1, pct = done / total, circ2 = 2*Math.PI*30;
+            const pending = todos.filter(x => !x.completed).slice(0, 4);
+            document.getElementById('dash-tasks').innerHTML = card('TODAY\'S SUNNAH', `${done}/${todos.length}`, `
+              <div class="flex items-center gap-4"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="none" stroke="#27272a" stroke-width="7"/><circle cx="40" cy="40" r="30" fill="none" stroke="#fbbf24" stroke-width="7" stroke-linecap="round" stroke-dasharray="${pct*circ2} ${circ2}" transform="rotate(-90 40 40)"/><text x="40" y="45" text-anchor="middle" font-size="15" font-weight="700" fill="#e4e4e7">${Math.round(pct*100)}%</text></svg>
+              <div class="text-xs text-zinc-400">${n.dow === 5 ? '<span class="text-emerald-300 font-bold">Jumu\'ah today</span><br>' : ''}${todos.length - done} remaining</div></div>
+              <div class="mt-3 space-y-1.5">${pending.map(x => `<div onclick="toggleTodo(${x.id})" class="cursor-pointer flex items-center justify-between gap-2 px-2.5 py-1.5 bg-zinc-900 rounded-xl text-[11px] hover:bg-zinc-800"><span class="truncate">${x.text}</span><span class="text-emerald-300 shrink-0">${x.time || ''}</span></div>`).join('') || '<div class="text-xs text-emerald-300">All done, MashaAllah ✦</div>'}</div>`);
+
+            renderHijriCal();
+
+            // --- Upcoming events ---
+            const ups = upcomingEvents(n, 16);
+            const _evS = document.getElementById('ev-scroll'), _evTop = _evS ? _evS.scrollTop : 0;
+            document.getElementById('dash-events').innerHTML = card('COMING UP', 'scroll · hover · tap', `<div id="ev-scroll" class="space-y-2 overflow-y-auto pr-1" style="max-height:330px">${ups.map((e, i) => {
+                const fill = Math.max(6, 100 - e.diff / 3.55);
+                return `<div data-ev="${e.id}" data-y="${e.hy}" class="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 rounded-2xl cursor-pointer transition-colors"><div class="flex justify-between items-baseline"><div class="font-bold text-sm">${e.title}</div><div class="font-extrabold ${e.diff === 0 ? 'text-amber-300' : 'text-emerald-300'}">${e.diff === 0 ? 'Today' : e.diff + 'd'}</div></div><div class="text-[10px] text-zinc-400">${e.d} ${hijriMonthName(e.m)} ${e.hy} · ${e.g.day} ${MON3[e.g.month-1]} ${e.g.year}</div>${i === 0 ? `<div class="text-[11px] text-zinc-300 mt-1.5">${evInfo(e.id, e.hy).desc}</div><div class="text-[11px] text-emerald-300 mt-0.5">✦ ${evInfo(e.id, e.hy).sunnah}</div>` : ''}<div class="h-1 bg-zinc-800 rounded-full mt-1.5 overflow-hidden"><div class="h-full ${e.cat === 'fasting' ? 'bg-emerald-400' : 'bg-amber-400'}" style="width:${fill}%"></div></div></div>`;
+            }).join('')}</div>`);
+
+            const _e2 = document.getElementById('ev-scroll'); if (_e2) _e2.scrollTop = _evTop;
+            // --- Planner card ---
+            const fast = upcomingEvents(n, 12).find(e => e.cat === 'fasting');
+            const ft = document.getElementById('focus-title'), fs = document.getElementById('focus-sub');
+            if (ft && fast) { ft.textContent = fast.diff === 0 ? `Fasting today · ${fast.title}` : `Fasting · ${fast.diff} day${fast.diff === 1 ? '' : 's'} to ${fast.short}`; fs.textContent = `Recommended: ${fast.g.day} ${MON3[fast.g.month-1]} ${fast.g.year}`; }
+            const pu = document.getElementById('planner-upcoming');
+            if (pu) pu.innerHTML = ups.slice(0, 3).map(e => `<div class="flex items-center justify-between px-3 py-2 bg-zinc-900 rounded-2xl"><div>${e.title} (${e.hy})</div><div class="text-xs font-bold text-emerald-300">${e.g.day} ${MON3[e.g.month-1]} ${e.g.year}</div></div>`).join('');
+            dashTick();
+        }
+        function dashTick() {
+            const clk = document.getElementById('hero-clock');
+            if (clk) clk.textContent = new Date().toLocaleTimeString('en-GB', {timeZone: TZ, hourCycle:'h23'});
+            if (!currentPrayerData) return;
+            const info = nextPrayerInfo(currentPrayerData.timings), diff = Math.max(0, Math.floor((info.t - Date.now()) / 1000));
+            const cd = document.getElementById('next-prayer-countdown'), nm = document.getElementById('next-prayer-name');
+            if (cd) cd.textContent = `${pad2(Math.floor(diff/3600))}:${pad2(Math.floor(diff%3600/60))}:${pad2(diff%60)}`;
+            if (nm) nm.textContent = info.name;
+            const frac = Math.min(1, Math.max(0, (Date.now() - info.prevT) / (info.t - info.prevT))), circ = 2*Math.PI*30;
+            const ring = document.getElementById('dash-ring'); if (ring) ring.setAttribute('stroke-dasharray', `${frac*circ} ${circ}`);
+            const rp = document.getElementById('dash-ring-pct'); if (rp) rp.textContent = Math.round(frac*100) + '%';
+            const z = zonedNow(), x = (z.sec / 86400 * 600).toFixed(1);
+            ['dash-now-line'].forEach(i => { const e = document.getElementById(i); if (e) { e.setAttribute('x1', x); e.setAttribute('x2', x); } });
+            const dot = document.getElementById('dash-now-dot'); if (dot) dot.setAttribute('cx', x);
+        }
+        // ═══════════════════════════
+
+
+
+        // ═════════ EVENT INFO (hover tooltip + detail modal) ═════════
+        function evInfo(id, hy) {
+            const base = EVENT_DAYS.find(e => e.id === id), full = generateEventsForYear(hy).find(e => e.id === id) || {};
+            const g = hijriDateToGregorian(hy, base.m, base.d), n = zonedNow();
+            const diff = dayNumber(g.year, g.month, g.day) - dayNumber(n.y, n.m, n.d);
+            const wd = new Date(Date.UTC(g.year, g.month-1, g.day, 12)).toLocaleDateString('en-US', {weekday:'long', timeZone:'UTC'});
+            const when = diff === 0 ? 'Today' : diff > 0 ? `In ${diff} day${diff === 1 ? '' : 's'}` : `${-diff} day${diff === -1 ? '' : 's'} ago`;
+            return { ...base, hy, g, diff, wd, when, desc: full.desc || '', sunnah: full.sunnah || '', hijri: `${base.d} ${hijriMonthName(base.m)} ${hy}`, gstr: `${wd}, ${g.day} ${MON3[g.month-1]} ${g.year}` };
+        }
+        let dashCal = null;
+        function dashCalShift(d) { dashCal.m += d; if (dashCal.m > 12) { dashCal.m = 1; dashCal.y++; } if (dashCal.m < 1) { dashCal.m = 12; dashCal.y--; } renderHijriCal(); }
+        function dashCalGo(m) { dashCal.m = m; renderHijriCal(); }
+        function dashCalToday() { dashCal = null; renderHijriCal(); }
+        function renderHijriCal() {
+            const n = zonedNow(), th = gregorianToHijri(n.y, n.m, n.d); if (!dashCal) dashCal = { y: th.year, m: th.month };
+            const { y, m } = dashCal, len = hijriMonthLength(y, m), g1 = hijriDateToGregorian(y, m, 1), base = Date.UTC(g1.year, g1.month-1, g1.day), first = new Date(base).getUTCDay(), todayN = dayNumber(n.y, n.m, n.d), gEnd = new Date(base + (len-1) * 864e5);
+            const strip = HM_SHORT.map((l, i) => `<button onclick="dashCalGo(${i+1})" title="${hijriMonthName(i+1)}" class="flex-1 py-1 rounded-lg text-[10px] font-bold ${i+1 === m ? 'bg-emerald-400 text-emerald-950' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'} ${(y === th.year && i+1 === th.month) ? 'ring-1 ring-white/60' : ''}">${l}</button>`).join('');
+            let cells = ['S','M','T','W','T','F','S'].map(d => `<div class="text-[10px] font-bold text-emerald-300 text-center">${d}</div>`).join('') + '<div></div>'.repeat(first);
+            for (let d = 1; d <= len; d++) {
+                const dt = new Date(base + (d-1) * 864e5), gy = dt.getUTCFullYear(), gm = dt.getUTCMonth()+1, gd = dt.getUTCDate(), ev = EVENT_DAYS.find(e => e.m === m && e.d === d), isT = dayNumber(gy, gm, gd) === todayN, fri = dt.getUTCDay() === 5, white = [13,14,15].includes(d) && m !== 9;
+                const tone = isT ? 'border-white bg-emerald-900/50' : ev ? (ev.cat === 'fasting' ? 'border-emerald-500/60 bg-emerald-950/40' : 'border-amber-500/60 bg-amber-950/30') : 'border-zinc-800 bg-zinc-900/60';
+                cells += `<div ${ev ? `data-ev="${ev.id}" data-y="${y}"` : ''} data-day="1" data-g="${gy}-${gm}-${gd}" data-h="${y}-${m}-${d}" class="rounded-xl border ${tone} ${ev ? 'cursor-pointer' : ''} hover:bg-zinc-800 hover:scale-[1.07] transition-all px-1 py-1 text-center"><div class="text-sm font-extrabold leading-none ${fri ? 'text-emerald-300' : ''}">${d}</div><div class="text-[9px] text-zinc-500 leading-tight">${gd === 1 ? MON3[gm-1] : gd}</div>${ev ? `<div class="text-[8px] leading-none truncate ${ev.cat === 'fasting' ? 'text-emerald-300' : 'text-amber-300'}">${ev.short}</div>` : white ? '<div class="mx-auto mt-0.5 w-1 h-1 rounded-full bg-sky-400"></div>' : ''}</div>`;
+            }
+            document.getElementById('dash-year').innerHTML = card('HIJRI CALENDAR', `<button onclick="dashCalShift(-1)" class="px-2 hover:text-white">◀</button><b class="text-zinc-200">${hijriMonthName(m)} ${y}</b><button onclick="dashCalShift(1)" class="px-2 hover:text-white">▶</button><button onclick="dashCalToday()" class="ml-2 px-2 py-0.5 bg-emerald-900/40 text-emerald-300 rounded-full">Today</button>`,
+                `<div class="flex gap-1 mb-2">${strip}</div><div id="hcal-grid" class="grid grid-cols-7 gap-1">${cells}</div><div class="flex flex-wrap gap-x-3 text-[10px] text-zinc-500 mt-2"><span>${g1.day} ${MON3[g1.month-1]} – ${gEnd.getUTCDate()} ${MON3[gEnd.getUTCMonth()]} ${gEnd.getUTCFullYear()}</span><span>scroll over the grid to change month</span><span class="text-emerald-300">● Friday / fasting</span><span class="text-sky-400">● White Days</span></div>`);
+        }
+        function evTipHTML(t) {
+            const i = evInfo(+t.dataset.ev, +t.dataset.y), fast = i.cat === 'fasting';
+            return `<div class="font-extrabold text-sm ${fast ? 'text-emerald-300' : 'text-amber-300'}">${i.title}</div><div class="text-[11px] text-zinc-400 mt-0.5">${i.hijri}</div><div class="text-[11px] text-zinc-400">${i.gstr}</div><div class="text-[11px] font-bold mt-1 ${i.diff === 0 ? 'text-amber-300' : 'text-zinc-200'}">${i.when}</div><div class="text-xs text-zinc-300 mt-2">${i.desc}</div><div class="text-xs text-emerald-300 mt-1">✦ ${i.sunnah}</div><div class="text-[10px] text-zinc-500 mt-2">Click for full details</div>`;
+        }
+        function dayTipHTML(t) {
+            const [gy, gm, gd] = t.dataset.g.split('-').map(Number), [hy, hm, hd] = t.dataset.h.split('-').map(Number), n = zonedNow();
+            const diff = dayNumber(gy, gm, gd) - dayNumber(n.y, n.m, n.d), dt = new Date(Date.UTC(gy, gm-1, gd, 12)), mp = moonPhase(dt.getTime());
+            const wd = dt.toLocaleDateString('en-US', {weekday:'long', timeZone:'UTC'}), dow = dt.getUTCDay();
+            const when = diff === 0 ? 'Today' : diff > 0 ? `In ${diff} day${diff === 1 ? '' : 's'}` : `${-diff} day${diff === -1 ? '' : 's'} ago`, notes = [];
+            if (dow === 5) notes.push("Jumu'ah: Surah Al-Kahf, salawat, the hour of acceptance");
+            if ([13,14,15].includes(hd) && hm !== 9) notes.push('White Day: recommended fast');
+            if (hm === 9) notes.push('Ramadan: fasting is obligatory'); else if (dow === 1 || dow === 4) notes.push('Monday/Thursday: Sunnah fasting day');
+            return `<div class="font-extrabold text-sm text-emerald-300">${hd} ${hijriMonthName(hm)} ${hy}</div><div class="text-[11px] text-zinc-400">${wd}, ${gd} ${MON3[gm-1]} ${gy}</div><div class="text-[11px] font-bold mt-1 text-zinc-200">${when} · Moon ${Math.round(mp.illum*100)}% lit</div>${notes.map(x => `<div class="text-xs text-emerald-300 mt-1">✦ ${x}</div>`).join('')}`;
+        }
+        function setupEventHover() {
+            if (window._evHover) return; window._evHover = true;
+            const tip = document.createElement('div'); tip.id = 'ev-tip';
+            tip.style.cssText = 'position:fixed;display:none;z-index:400;width:270px;pointer-events:none;background:rgba(9,9,11,.97);border:1px solid rgba(16,185,129,.45);border-radius:16px;padding:12px 14px;box-shadow:0 12px 40px rgba(0,0,0,.6)';
+            document.body.appendChild(tip);
+            const place = e => { const w = tip.offsetWidth, h = tip.offsetHeight; let x = e.clientX + 16, y = e.clientY + 16; if (x + w > innerWidth - 8) x = e.clientX - w - 16; if (y + h > innerHeight - 8) y = e.clientY - h - 16; tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px'; };
+            const SEL = '[data-ev],[data-day]', target = e => e.target.closest && e.target.closest(SEL);
+            document.addEventListener('mouseover', e => { const t = target(e); if (!t) return; tip.innerHTML = t.dataset.ev ? evTipHTML(t) : dayTipHTML(t); tip.style.display = 'block'; place(e); });
+            document.addEventListener('mousemove', e => { if (tip.style.display === 'block') place(e); });
+            document.addEventListener('mouseout', e => { const t = target(e); if (t && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(SEL) === t)) tip.style.display = 'none'; });
+            document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-ev]'); if (t) { tip.style.display = 'none'; showEventInfo(+t.dataset.ev, +t.dataset.y); } });
+            let lock = 0;
+            document.getElementById('dash-year').addEventListener('wheel', e => { if (!e.target.closest('#hcal-grid')) return; e.preventDefault(); const now = Date.now(); if (now - lock < 140) return; lock = now; dashCalShift(e.deltaY > 0 ? 1 : -1); }, { passive: false });
+        }
+
+        function showEventInfo(id, hy) {
+            const i = evInfo(id, hy), fast = i.cat === 'fasting';
+            const modal = document.createElement('div');
+            modal.className = 'ev-modal fixed inset-0 bg-black/70 flex items-center justify-center z-[250] p-4';
+            modal.innerHTML = `<div onclick="this.parentElement.remove()" class="absolute inset-0"></div>
+                <div class="glass relative w-full max-w-sm border border-emerald-900/40 p-6 rounded-3xl bg-zinc-950/90">
+                    <div class="flex items-center justify-between mb-3"><span class="event-pill ${fast ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-900 text-amber-300'}">${fast ? 'FASTING / WORSHIP' : 'CELEBRATION'}</span><span class="text-xs font-bold ${i.diff === 0 ? 'text-amber-300' : 'text-zinc-300'}">${i.when}</span></div>
+                    <div class="font-extrabold text-2xl leading-tight">${i.title}</div>
+                    <div class="text-emerald-300 text-sm font-semibold mt-1">${i.hijri}</div>
+                    <div class="text-zinc-400 text-xs">${i.gstr}</div>
+                    <div class="mt-4 text-sm text-zinc-300">${i.desc}</div>
+                    <div class="mt-3 px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-2xl"><div class="text-[10px] font-bold tracking-widest text-emerald-300 mb-1">SUNNAH / WHAT TO DO</div><div class="text-sm">${i.sunnah}</div></div>
+                    <div class="flex gap-2 mt-5"><button onclick="this.closest('.ev-modal').remove();showView('calendar')" class="flex-1 py-2.5 text-xs font-extrabold border border-zinc-700 rounded-3xl hover:bg-zinc-900">All events</button><button onclick="this.closest('.ev-modal').remove()" class="flex-1 py-2.5 text-xs font-extrabold bg-emerald-300 text-emerald-900 rounded-3xl">Close</button></div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+
+        // ═════════ VIEW ROUTER (no scrolling, just switching) ═════════
+        const VIEWS = [['home','Home','fa-house'],['prayers','Prayers','fa-clock'],['calendar','Calendar','fa-calendar-days'],['planner','Planner','fa-list-check'],['framework','Framework','fa-compass'],['knowledge','Library','fa-book-open']];
+        function showView(name, push = true) {
+            if (name === 'resources') name = 'knowledge';
+            if (!VIEWS.some(v => v[0] === name)) name = 'home';
+            document.querySelectorAll('.view').forEach(el => el.classList.toggle('active', el.dataset.view === name));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('nav-pill-active', b.dataset.nav === name));
+            if (push) { try { history.replaceState(null, '', '#' + name); } catch (e) {} }
+            window.scrollTo(0, 0);
+            try { if (name === 'home') renderDashboard(); if (name === 'framework') renderFramework(); } catch (e) { console.error(e); }
+        }
+        function initViews() {
+            const btns = VIEWS.map(([k, l, ic]) => `<button data-nav="${k}" onclick="showView('${k}')" class="nav-btn text-sm"><i class="fa-solid ${ic} mr-1.5 text-xs"></i>${l}</button>`).join('');
+            document.getElementById('nav-desktop').innerHTML = `<div class="flex items-center gap-x-1 glass border border-zinc-700 px-2 py-1 rounded-[3rem]">${btns}</div>`;
+            document.getElementById('nav-mobile').innerHTML = btns;
+            const logo = document.querySelector('#navbar .w-11')?.parentElement; if (logo) { logo.style.cursor = 'pointer'; logo.addEventListener('click', () => showView('home')); }
+            setupEventHover();
+            showView(location.hash.slice(1) || 'home', false);
+            window.addEventListener('hashchange', () => showView(location.hash.slice(1), false));
+        }
+
         window.onload = initializeApp;
     </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
