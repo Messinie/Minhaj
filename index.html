@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap" rel="stylesheet">
+    <script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("minhajTheme")||"dark")}catch(e){document.documentElement.setAttribute("data-theme","dark")}</script>
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; }
         .view { display: none; }
@@ -83,6 +84,53 @@
         .calendar-day .text-\[8px\] { opacity: 0.5; }
         .calendar-day:hover .text-\[8px\] { opacity: 0.8; }
         .calendar-day.today .text-\[8px\] { opacity: 0.85; color: rgba(255,255,255,0.8); }
+        /* ===== Theme toggle ===== */
+        .tt{position:relative;width:100px;height:38px;flex:none;border-radius:99px;border:1px solid rgba(255,255,255,.18);cursor:pointer;padding:0;color:#ede9fe;font:700 11px/1 Inter,sans-serif;letter-spacing:.06em;
+            background:linear-gradient(100deg,rgba(49,26,110,.7),rgba(124,58,237,.95));backdrop-filter:blur(10px);
+            box-shadow:0 0 24px rgba(139,92,246,.5),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -8px 14px rgba(0,0,0,.25);transition:background .5s,box-shadow .5s,border-color .5s,color .5s}
+        .tt:hover{box-shadow:0 0 34px rgba(139,92,246,.75),inset 0 1px 0 rgba(255,255,255,.3),inset 0 -8px 14px rgba(0,0,0,.25)}
+        .tt:focus-visible{outline:2px solid #a78bfa;outline-offset:4px}
+        .tt-lbl{position:absolute;top:50%;transform:translateY(-50%);transition:opacity .35s,transform .45s;text-transform:uppercase}
+        .tt-l-dark{left:16px}.tt-l-light{right:16px;opacity:0;transform:translateY(-50%) translateX(-8px)}
+        .tt-knob{position:absolute;top:-5px;left:calc(100% - 42px);width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1.5px solid rgba(255,255,255,.4);
+            background:radial-gradient(circle at 30% 24%,rgba(255,255,255,.6),rgba(255,255,255,.1) 42%,rgba(167,139,250,.3) 100%);backdrop-filter:blur(8px);
+            box-shadow:inset 0 -7px 14px rgba(139,92,246,.5),inset 0 3px 6px rgba(255,255,255,.45),0 8px 22px rgba(15,10,40,.5),0 0 26px rgba(167,139,250,.45);
+            transition:left .55s cubic-bezier(.34,1.4,.55,1),box-shadow .5s,transform .2s}
+        .tt-knob::after{content:'';position:absolute;top:5px;left:9px;width:16px;height:8px;border-radius:50%;background:linear-gradient(rgba(255,255,255,.7),transparent);transform:rotate(-24deg)}
+        .tt:active .tt-knob{transform:scale(.92)}
+        .tt-knob svg{position:absolute;width:21px;height:21px;transition:transform .6s cubic-bezier(.34,1.4,.55,1),opacity .35s}
+        .tt-moon{filter:drop-shadow(0 0 6px #ddd6fe);opacity:1}.tt-sun{opacity:0;transform:rotate(-90deg) scale(.4)}
+        html[data-theme=light] .tt{color:#7c2d12;border-color:rgba(255,255,255,.7);background:linear-gradient(100deg,#fef08a,#fdba74 55%,#fb923c);
+            box-shadow:0 0 24px rgba(251,146,60,.55),inset 0 1px 0 rgba(255,255,255,.8),inset 0 -8px 14px rgba(234,88,12,.18)}
+        html[data-theme=light] .tt:hover{box-shadow:0 0 34px rgba(251,146,60,.85),inset 0 1px 0 rgba(255,255,255,.8)}
+        html[data-theme=light] .tt-l-dark{opacity:0;transform:translateY(-50%) translateX(8px)}
+        html[data-theme=light] .tt-l-light{opacity:1;transform:translateY(-50%)}
+        html[data-theme=light] .tt-knob{left:-5px;border-color:rgba(255,255,255,.85);background:radial-gradient(circle at 30% 24%,#fff,rgba(255,255,255,.35) 45%,rgba(253,186,116,.55) 100%);
+            box-shadow:inset 0 -7px 14px rgba(249,115,22,.4),inset 0 3px 6px #fff,0 8px 22px rgba(154,52,18,.25),0 0 28px rgba(253,224,71,.8)}
+        html[data-theme=light] .tt-moon{opacity:0;transform:rotate(90deg) scale(.4)}
+        html[data-theme=light] .tt-sun{opacity:1;transform:none;filter:drop-shadow(0 0 5px #fde047)}
+
+        /* ===== Light theme ===== */
+        html[data-theme=light] body{background:#f3f4f8;color:#18181b}
+        html[data-theme=light] body::before{background:radial-gradient(ellipse at center,rgba(16,185,129,.13) 0%,transparent 70%)}
+        html[data-theme=light] .bg-zinc-950,html[data-theme=light] .bg-zinc-950\/90,html[data-theme=light] .bg-zinc-950\/60{background-color:#f3f4f8}
+        html[data-theme=light] .bg-zinc-900,html[data-theme=light] .bg-zinc-900\/60,html[data-theme=light] .bg-zinc-900\/70{background-color:#fff}
+        html[data-theme=light] .bg-zinc-800{background-color:#e4e4e7}
+        html[data-theme=light] .hover\:bg-zinc-800:hover,html[data-theme=light] .hover\:bg-zinc-900:hover,html[data-theme=light] .hover\:bg-zinc-900\/60:hover{background-color:#ebecf1}
+        html[data-theme=light] .border-zinc-700,html[data-theme=light] .border-zinc-800,html[data-theme=light] .border-zinc-800\/70,html[data-theme=light] .border-zinc-500{border-color:#d4d4dc}
+        html[data-theme=light] .glass{background:rgba(255,255,255,.72);border-color:rgba(0,0,0,.09);box-shadow:0 4px 18px -8px rgba(30,30,60,.12)}
+        html[data-theme=light] .text-zinc-200,html[data-theme=light] .text-zinc-300{color:#27272a}
+        html[data-theme=light] .text-zinc-400{color:#52525b}html[data-theme=light] .text-zinc-500,html[data-theme=light] .text-zinc-600{color:#71717a}
+        html[data-theme=light] .text-emerald-300{color:#047857}html[data-theme=light] .text-emerald-400{color:#059669}
+        html[data-theme=light] .text-amber-300{color:#b45309}html[data-theme=light] .text-rose-300{color:#be123c}html[data-theme=light] .text-sky-400{color:#0369a1}
+        html[data-theme=light] .bg-emerald-400 .text-emerald-300,html[data-theme=light] .bg-black .text-emerald-300{color:#6ee7b7}
+        html[data-theme=light] .fw-chip{background:#fff;border-color:#d4d4dc;color:#3f3f46}html[data-theme=light] .fw-chip.on{color:#022c22}
+        html[data-theme=light] .lib-nav-btn:hover{background:#ebecf1;color:#18181b}html[data-theme=light] .lib-nav-btn.on{background:rgba(16,185,129,.16);color:#047857}
+        html[data-theme=light] .lib-n{background:#e4e4e7;color:#52525b}html[data-theme=light] .fw-item:hover{background:rgba(0,0,0,.05)}
+        html[data-theme=light] #ev-tip{background:rgba(255,255,255,.98)!important;color:#27272a;box-shadow:0 12px 36px rgba(30,30,60,.2)!important}
+        html[data-theme=light] svg [fill="#18181b"]{fill:#e4e4e7}html[data-theme=light] svg [stroke="#27272a"],html[data-theme=light] svg [stroke="#3f3f46"]{stroke:#d4d4d8}
+        html[data-theme=light] svg [fill="#27272a"]{fill:#d4d4d8}html[data-theme=light] svg [fill="#a1a1aa"]{fill:#52525b}html[data-theme=light] svg [fill="#d4d4d8"],html[data-theme=light] svg [fill="#e4e4e7"]{fill:#27272a}
+        html[data-theme=light] ::-webkit-scrollbar-thumb{background:rgba(5,150,105,.35)}
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200 overflow-x-hidden">
@@ -106,9 +154,13 @@
                             <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></div>
                             <span class="font-semibold text-xs">1447 AH • 2026</span>
                         </div>
-                        <div class="w-9 h-9 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center cursor-pointer hover:bg-zinc-800 transition-colors" onclick="showProfileModal()">
-                            <i class="fa-solid fa-user text-emerald-300"></i>
-                        </div>
+                        <button id="theme-toggle" class="tt mr-1" role="switch" aria-checked="true" aria-label="Toggle light and dark mode" onclick="toggleTheme()">
+                            <span class="tt-lbl tt-l-dark">Dark</span><span class="tt-lbl tt-l-light">Light</span>
+                            <span class="tt-knob">
+                                <svg class="tt-moon" viewBox="0 0 24 24" fill="#fff"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+                                <svg class="tt-sun" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="#fbbf24"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1681,30 +1733,7 @@
             }
         }
         
-        function showProfileModal() {
-            const modal = document.createElement('div');
-            modal.className = `fixed inset-0 bg-black/70 z-[200] flex items-center justify-center`;
-            modal.innerHTML = `
-                <div onclick="event.target.remove()" class="absolute inset-0"></div>
-                <div onclick="event.stopImmediatePropagation()" class="glass w-[300px] border-emerald-900/30 border px-6 py-7 rounded-3xl">
-                    <div class="text-center">
-                        <div class="w-16 h-16 mx-auto flex items-center justify-center bg-emerald-900/30 rounded-[3rem]">
-                            <i class="fa-solid fa-user text-4xl text-emerald-300"></i>
-                        </div>
-                        <div class="mt-5">
-                            <div class="font-extrabold text-xl">Aisha Rahman</div>
-                            <div class="text-xs text-emerald-300 font-bold">Sydney, Australia</div>
-                        </div>
-                        <div class="mt-5 grid grid-cols-3 gap-3 text-center">
-                            <div><div class="font-extrabold">47</div><div class="text-xs text-zinc-400">Days fasted</div></div>
-                            <div><div class="font-extrabold">124</div><div class="text-xs text-zinc-400">Prayers tracked</div></div>
-                            <div><div class="font-extrabold">19</div><div class="text-xs text-zinc-400">Events done</div></div>
-                        </div>
-                        <button onclick="this.closest('.fixed').remove()" class="mt-6 text-xs w-full transition-colors py-3 text-center font-extrabold bg-emerald-300 text-emerald-900 rounded-[3rem]">Manage Account</button>
-                    </div>
-                </div>`;
-            document.body.appendChild(modal);
-        }
+        
         
         function showFullscreenTimer() {
             const modal = document.createElement('div');
@@ -1933,6 +1962,7 @@
             if (!document.getElementById('nav-desktop').children.length) initViews();  // never leave the page blank
         }
         function _initApp() {
+            applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
             initializeTailwind();
             renderEvents('all');
             document.getElementById('filter-all').classList.add('bg-emerald-400', 'text-zinc-900');
@@ -2315,6 +2345,12 @@
             window.addEventListener('hashchange', () => showView(location.hash.slice(1), false));
         }
 
+        function applyTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            const b = document.getElementById('theme-toggle'); if (b) b.setAttribute('aria-checked', String(t === 'dark'));
+            try { localStorage.setItem('minhajTheme', t); } catch (e) {}
+        }
+        function toggleTheme() { applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
         window.onload = initializeApp;
     </script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
